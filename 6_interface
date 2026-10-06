@@ -1,7 +1,4 @@
 Interface = object
-  menu_competences_ouvert = false
-  competence_production = 0
-
   est_mobile = function()
     if screen.height > screen.width then
       return true
@@ -35,6 +32,18 @@ Interface = object
     screen.drawText(cout,x,y-2,2,"#DCE8F7")
   end
 
+  bouton_competence = function(x,y,w,h,texte,cout)
+    screen.fillRect(x,y,w,h,"#7652A8")
+    screen.drawText(texte,x,y+2,3,"#FFFFFF")
+    screen.drawText(cout,x,y-3,3,"#E9DDF7")
+  end
+
+  bouton_competence_mobile = function(x,y,w,h,texte,cout)
+    screen.fillRect(x,y,w,h,"#7652A8")
+    screen.drawText(texte,x,y+2,3,"#FFFFFF")
+    screen.drawText(cout,x,y-2,2,"#E9DDF7")
+  end
+
   peut_bloc_gauche = function()
     return GestionBlocs.bloc_actif > 0
   end
@@ -47,24 +56,6 @@ Interface = object
     end
 
     return GestionBlocs.blocs[suivant].debloque
-  end
-
-  production_selectionnee = function()
-    if GestionBlocs.blocs.length == 0 then
-      return 0
-    end
-
-    bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
-
-    if selection_production < 0 then
-      selection_production = 0
-    end
-
-    if selection_production >= bloc.productions.length then
-      selection_production = bloc.productions.length - 1
-    end
-
-    return bloc.productions[selection_production]
   end
 
   progression_production = function(p)
@@ -184,6 +175,15 @@ Interface = object
     return "("+cout+" CC)"
   end
 
+  texte_cout_competence = function(p)
+    if p.competence >= p.competence_max then
+      return "(MAX)"
+    end
+
+    cout = Ameliorations.cout(p,p.competence+1)
+    return "("+cout+" CC)"
+  end
+
   prochain_programme = function(bloc)
     index = 0
 
@@ -204,53 +204,11 @@ Interface = object
     return "Tous les programmes du bloc sont débloqués"
   end
 
-  texte_competence = function(p)
-    if p.competence >= p.competence_max then
-      return "COMPÉTENCES MAX"
-    end
-
-    prochaine = p.competence + 1
-    competence = Ameliorations.get(p,prochaine)
-
-    if competence == 0 then
-      return "Aucune compétence disponible"
-    end
-
-    return competence.nom+" | "+competence.texte
-  end
-
-  bonus_actuel = function(p)
-    bonus = Production.gain_competence_total(p)
-    texte = "Bonus équipement : +"+bonus+" CC"
-
-    if p.auto_illimite then
-      return texte+" | Auto illimitée"
-    end
-
-    if p.auto_duree_minutes > 0 then
-      return texte+" | Auto "+p.auto_duree_minutes+" min"
-    end
-
-    return texte+" | Auto non débloquée"
-  end
-
-  fermer_competences = function()
-    menu_competences_ouvert = false
-    competence_production = 0
-  end
-
-  ouvrir_competences = function(p,index)
-    selection_production = index
-    competence_production = p
-    menu_competences_ouvert = true
-  end
-
   clic_bloc_pc = function()
     if peut_bloc_gauche() then
       if dans_bouton(-150,67,20,16) then
         GestionBlocs.bloc_actif = GestionBlocs.bloc_actif - 1
         selection_production = 0
-        fermer_competences()
         return true
       end
     end
@@ -259,7 +217,6 @@ Interface = object
       if dans_bouton(150,67,20,16) then
         GestionBlocs.bloc_actif = GestionBlocs.bloc_actif + 1
         selection_production = 0
-        fermer_competences()
         return true
       end
     end
@@ -272,7 +229,6 @@ Interface = object
       if dans_bouton(-82,152,28,24) then
         GestionBlocs.bloc_actif = GestionBlocs.bloc_actif - 1
         selection_production = 0
-        fermer_competences()
         return true
       end
     end
@@ -281,7 +237,6 @@ Interface = object
       if dans_bouton(82,152,28,24) then
         GestionBlocs.bloc_actif = GestionBlocs.bloc_actif + 1
         selection_production = 0
-        fermer_competences()
         return true
       end
     end
@@ -332,7 +287,8 @@ Interface = object
         end
 
         if dans_bouton(156,y,40,10) then
-          ouvrir_competences(p,index)
+          selection_production = index
+          Ameliorations.acheter(p)
           return true
         end
 
@@ -397,7 +353,8 @@ Interface = object
         end
 
         if dans_bouton(74,y-28,54,8) then
-          ouvrir_competences(p,index)
+          selection_production = index
+          Ameliorations.acheter(p)
           return true
         end
 
@@ -410,43 +367,8 @@ Interface = object
     return false
   end
 
-  update_panneau_pc = function(p)
-    if dans_bouton(92,-2,18,16) then
-      fermer_competences()
-      return
-    end
-
-    if p.competence < p.competence_max then
-      if dans_bouton(0,-45,120,18) then
-        Ameliorations.acheter(p)
-      end
-    end
-  end
-
-  update_panneau_mobile = function(p)
-    if dans_bouton(88,-24,24,22) then
-      fermer_competences()
-      return
-    end
-
-    if p.competence < p.competence_max then
-      if dans_bouton(0,-86,160,26) then
-        Ameliorations.acheter(p)
-      end
-    end
-  end
-
   update_pc = function()
     bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
-
-    if menu_competences_ouvert then
-      if competence_production != 0 then
-        update_panneau_pc(competence_production)
-      else
-        fermer_competences()
-      end
-      return
-    end
 
     if clic_bloc_pc() then
       return
@@ -457,15 +379,6 @@ Interface = object
 
   update_mobile = function()
     bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
-
-    if menu_competences_ouvert then
-      if competence_production != 0 then
-        update_panneau_mobile(competence_production)
-      else
-        fermer_competences()
-      end
-      return
-    end
 
     if clic_bloc_mobile() then
       return
@@ -521,7 +434,7 @@ Interface = object
     bouton_niveau(62,y,22,10,"+1",texte_cout_achat(p,1))
     bouton_niveau(89,y,26,10,"+10",texte_cout_achat(p,10))
     bouton_niveau(118,y,28,10,"MAX",texte_cout_max(p))
-    bouton(156,y,40,10,"COMPÉTENCE","#7652A8",3)
+    bouton_competence(156,y,40,10,"COMPÉTENCE",texte_cout_competence(p))
   end
 
   dessiner_lignes_pc = function(bloc)
@@ -582,7 +495,7 @@ Interface = object
     bouton_niveau_mobile(-58,y-28,28,8,"+1",texte_cout_achat(p,1))
     bouton_niveau_mobile(-10,y-28,28,8,"+10",texte_cout_achat(p,10))
     bouton_niveau_mobile(38,y-28,28,8,"MAX",texte_cout_max(p))
-    bouton(74,y-28,54,8,"COMPÉTENCE","#7652A8",3)
+    bouton_competence_mobile(74,y-28,54,8,"COMPÉTENCE",texte_cout_competence(p))
   end
 
   dessiner_lignes_mobile = function(bloc)
@@ -598,42 +511,6 @@ Interface = object
       end
 
       index = index + 1
-    end
-  end
-
-  dessiner_panneau_pc = function(p)
-    screen.fillRect(0,-15,200,94,"#202637")
-    screen.drawText("COMPÉTENCES",0,16,8,"#FFFFFF")
-    bouton(92,-2,18,16,"X","#555B66",6)
-
-    screen.drawText(p.nom,0,3,6,"#BFE1FF")
-    screen.drawText("Compétence : "+p.competence+" / "+p.competence_max,0,-9,5,"#D9E2F0")
-    screen.drawText(bonus_actuel(p),0,-20,5,"#8FE59C")
-    screen.drawText(texte_competence(p),0,-30,5,"#D9E2F0")
-
-    if p.competence < p.competence_max then
-      prix = Ameliorations.cout(p,p.competence+1)
-      bouton(0,-45,120,18,"ACHETER = "+prix+" CC","#7652A8",5)
-    else
-      bouton(0,-45,120,18,"COMPÉTENCES MAX","#555B66",5)
-    end
-  end
-
-  dessiner_panneau_mobile = function(p)
-    screen.fillRect(0,-52,194,96,"#202637")
-    screen.drawText("COMPÉTENCES",0,-10,9,"#FFFFFF")
-    bouton(88,-24,24,22,"X","#555B66",7)
-
-    screen.drawText(p.nom,0,-36,6,"#BFE1FF")
-    screen.drawText("Compétence "+p.competence+" / "+p.competence_max,0,-49,6,"#D9E2F0")
-    screen.drawText(bonus_actuel(p),0,-61,5,"#8FE59C")
-    screen.drawText(texte_competence(p),0,-72,5,"#D9E2F0")
-
-    if p.competence < p.competence_max then
-      prix = Ameliorations.cout(p,p.competence+1)
-      bouton(0,-86,160,26,"ACHETER = "+prix+" CC","#7652A8",7)
-    else
-      bouton(0,-86,160,26,"COMPÉTENCES MAX","#555B66",7)
     end
   end
 
@@ -661,12 +538,6 @@ Interface = object
     dessiner_lignes_pc(bloc)
 
     screen.drawText(prochain_programme(bloc),0,-108,4,"#8993A3")
-
-    if menu_competences_ouvert then
-      if competence_production != 0 then
-        dessiner_panneau_pc(competence_production)
-      end
-    end
   end
 
   dessiner_mobile = function(bloc)
@@ -686,12 +557,6 @@ Interface = object
     dessiner_lignes_mobile(bloc)
 
     screen.drawText(prochain_programme(bloc),0,-146,5,"#8993A3")
-
-    if menu_competences_ouvert then
-      if competence_production != 0 then
-        dessiner_panneau_mobile(competence_production)
-      end
-    end
   end
 
   dessiner = function()
