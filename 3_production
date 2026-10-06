@@ -62,9 +62,28 @@ Production = object
     return floor(gain)
   end
 
+  gain_competence_total = function(p)
+    total = 0
+    niveau_competence = 1
+
+    while niveau_competence <= p.competence
+      competence = Donnees.get_competence(p.bloc_id,niveau_competence)
+
+      if competence != 0 then
+        if competence.type == "gain_fixe" then
+          total = total + competence.valeur
+        end
+      end
+
+      niveau_competence = niveau_competence + 1
+    end
+
+    return floor(total)
+  end
+
   gain_niveau = function(p)
     gain = gain_normal(p)
-    gain = gain + p.gain_competence
+    gain = gain + gain_competence_total(p)
     return floor(gain)
   end
 
