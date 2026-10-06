@@ -6,6 +6,7 @@ Production = object
     p.bloc_id = bloc.id
     p.bloc_nom = bloc.nom
     p.numero = numero
+    p.nom = Donnees.nom_programme(bloc.id,numero,bloc.nom+" "+numero)
 
     p.niveau = 1
     p.niveau_max = numero * 100
@@ -13,8 +14,9 @@ Production = object
     progression = bloc.progression_gain
     decalage = numero - 1
     ajout = decalage * progression
+
     p.gain_base = bloc.gain_base + ajout
-    p.gain_bonus = 0
+    p.gain_competence = 0
 
     p.cout_niveau = p.gain_base * 2
 
@@ -45,8 +47,8 @@ Production = object
 
     p.debloquee = false
 
-    p.amelioration = 0
-    p.amelioration_max = bloc.ameliorations
+    p.competence = 0
+    p.competence_max = Donnees.nombre_competences(bloc.id)
 
     p.auto_duree_minutes = 0
     p.auto_restant = 0
@@ -57,9 +59,7 @@ Production = object
 
   gain_niveau = function(p)
     gain = p.gain_base * p.niveau
-    bonus = p.gain_bonus / 100
-    multiplicateur = 1 + bonus
-    gain = gain * multiplicateur
+    gain = gain + p.gain_competence
     return floor(gain)
   end
 
@@ -126,9 +126,11 @@ Production = object
 
   cout_max = function(p)
     restant = p.niveau_max - p.niveau
+
     if restant <= 0 then
       return 0
     end
+
     return cout_niveaux(p,restant)
   end
 
@@ -166,6 +168,7 @@ Production = object
       if not acheter_niveau(p) then
         return achetes
       end
+
       achetes = achetes + 1
     end
 
@@ -179,6 +182,7 @@ Production = object
       if not acheter_niveau(p) then
         return achetes
       end
+
       achetes = achetes + 1
     end
 
