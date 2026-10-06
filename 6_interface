@@ -59,7 +59,13 @@ Interface = object
       return false
     end
 
-    cout = Ameliorations.cout(p,p.competence+1)
+    prochain = p.competence + 1
+
+    if not Ameliorations.debloquee(p,prochain) then
+      return false
+    end
+
+    cout = Ameliorations.cout(p,prochain)
     return Economie.cc >= cout
   end
 
@@ -213,7 +219,14 @@ Interface = object
       return "(MAX)"
     end
 
-    cout = Ameliorations.cout(p,p.competence+1)
+    prochain = p.competence + 1
+
+    if not Ameliorations.debloquee(p,prochain) then
+      requis = Ameliorations.niveau_requis(prochain)
+      return "(NIV "+requis+")"
+    end
+
+    cout = Ameliorations.cout(p,prochain)
     return "("+cout+" CC)"
   end
 
