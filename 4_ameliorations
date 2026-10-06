@@ -1,73 +1,66 @@
 Ameliorations = object
-
-Ameliorations.cout = function(p, prochain_niveau)
-  if prochain_niveau < 1 then prochain_niveau = 1 end
-  return floor(p.gain_base * 4 * pow(2, prochain_niveau - 1))
-end
-
-Ameliorations.bonus_gain_cible = function(p, niveau_amelioration)
-  nb_impairs = ceil(p.amelioration_max / 2)
-  rang = ceil(niveau_amelioration / 2)
-
-  if nb_impairs <= 1 then
-    return 50
+  cout = function(p, prochain_niveau)
+    if prochain_niveau < 1 then prochain_niveau = 1 end
+    return floor(p.gain_base * 4 * (2 ^ (prochain_niveau - 1)))
   end
 
-  bonus = 2 + (rang - 1) * (48 / (nb_impairs - 1))
+  bonus_gain_cible = function(p, niveau_amelioration)
+    local nb_impairs = ceil(p.amelioration_max / 2)
+    local rang = ceil(niveau_amelioration / 2)
 
-  if bonus > 50 then bonus = 50 end
-  return round(bonus)
-end
+    if nb_impairs <= 1 then return 50 end
 
-Ameliorations.auto_minutes = function(p, niveau_amelioration)
-  nb_auto = floor(p.amelioration_max / 2)
-  rang = floor(niveau_amelioration / 2)
-
-  if rang >= nb_auto then
-    return -1
+    local bonus = 2 + (rang - 1) * (48 / (nb_impairs - 1))
+    if bonus > 50 then bonus = 50 end
+    return round(bonus)
   end
 
-  if nb_auto <= 2 then
-    if rang == 1 then return 2 end
-    return 30
+  auto_minutes = function(p, niveau_amelioration)
+    local nb_auto = floor(p.amelioration_max / 2)
+    local rang = floor(niveau_amelioration / 2)
+
+    if rang >= nb_auto then return -1 end
+    if rang <= 1 then return 2 end
+
+    local ratio = (rang - 1) / (nb_auto - 2)
+    local minutes = 2 + ratio * 28
+    if minutes > 30 then minutes = 30 end
+    if minutes < 2 then minutes = 2 end
+    return round(minutes)
   end
 
-  ratio = (rang - 1) / (nb_auto - 2)
-  minutes = 2 + ratio * 28
+  acheter = function(p)
+    if p.amelioration >= p.amelioration_max then return false end
 
-  if minutes > 30 then minutes = 30 end
-  if minutes < 2 then minutes = 2 end
+    local prochain = p.amelioration + 1
+    local prix = cout(p, prochain)
+    if Economie.cc < prix then return false end
 
-  return round(minutes)
-end
+    Economie.cc -= prix
+    p.amelioration = prochain
 
-Ameliorations.acheter = function(p)
-  if p.amelioration >= p.amelioration_max then
-    return false
-  end
-
-  prochain = p.amelioration + 1
-  cout = Ameliorations.cout(p, prochain)
-
-  if Economie.cc < cout then
-    return false
-  end
-
-  Economie.cc -= cout
-  p.amelioration = prochain
-
-  if prochain % 2 == 1 then
-    p.gain_bonus = Ameliorations.bonus_gain_cible(p, prochain)
-  else
-    minutes = Ameliorations.auto_minutes(p, prochain)
-
-    if minutes == -1 then
-      p.auto_illimite = true
-      p.auto_restant = 0
+    if prochain % 2 == 1 then
+      p.gain_bonus = bonus_gain_cible(p, prochain)
     else
-      p.auto_restant = minutes * 60
+      local minutes = auto_minutes(p, prochain)
+      if minutes == -1 then
+        p.auto_illimite = true
+        p.auto_duree_minutes = 0
+        p.auto_restant = 0
+      else
+        p.auto_duree_minutes = minutes
+      end
     end
+
+    return true
   end
 
-  return true
+  recharger_auto = function(p)
+    if p.auto_illimite then return true end
+    if p.auto_duree_minutes <= 0 then return false end
+
+    p.auto_restant = p.auto_duree_minutes * 60
+    if not p.en_cours then Production.lancer(p) end
+    return true
+  end
 end
