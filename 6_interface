@@ -289,7 +289,7 @@ Interface = object
   end
 
   update_lignes_mobile = function(bloc)
-    y = 92
+    y = 100
     index = 0
 
     while index < bloc.productions.length
@@ -401,7 +401,7 @@ Interface = object
     if clic_bloc_mobile() then return end
     if update_lignes_mobile(bloc) then return end
 
-    if dans_bouton(0,-126,160,22) then
+    if dans_bouton(0,-105,160,22) then
       menu_ameliorations_ouvert = true
       return
     end
@@ -507,7 +507,7 @@ Interface = object
   end
 
   dessiner_lignes_mobile = function(bloc)
-    y = 92
+    y = 100
     index = 0
 
     while index < bloc.productions.length
@@ -606,10 +606,10 @@ Interface = object
 
     p = production_selectionnee()
     if p != 0 then
-      bouton(0,-126,160,22,"AMÉLIORATIONS","#7652A8",6)
+      bouton(0,-105,160,22,"AMÉLIORATIONS","#7652A8",6)
     end
 
-    screen.drawText(prochain_programme(bloc),0,-142,5,"#8993A3")
+    screen.drawText(prochain_programme(bloc),0,-120,5,"#8993A3")
 
     if menu_ameliorations_ouvert and p != 0 then
       dessiner_panneau_mobile(p)
