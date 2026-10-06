@@ -131,6 +131,16 @@ Interface = object
     return "AUTO "+p.auto_duree_minutes+"m"
   end
 
+  texte_gain = function(p)
+    normal = Production.gain_normal(p)
+
+    if p.gain_competence > 0 then
+      return normal+" CC (+"+p.gain_competence+")"
+    end
+
+    return normal+" CC"
+  end
+
   texte_niveau = function(p)
     cout = Production.cout_suivant(p)
 
@@ -478,7 +488,7 @@ Interface = object
     end
 
     screen.drawText(p.nom,-150,y,4,"#FFFFFF")
-    screen.drawText(Production.gain_niveau(p)+" CC",-118,y,5,"#8FE59C")
+    screen.drawText(texte_gain(p),-118,y,4,"#8FE59C")
     screen.drawText(texte_niveau(p),-82,y,4,"#C8D0DE")
 
     bouton(-42,y,24,10,"LANCER","#2D8B62",3)
@@ -534,7 +544,7 @@ Interface = object
     screen.fillRect(0,y,190,54,couleur)
 
     screen.drawText(p.nom,-74,y+20,4,"#FFFFFF")
-    screen.drawText(Production.gain_niveau(p)+" CC",74,y+20,5,"#8FE59C")
+    screen.drawText(texte_gain(p),74,y+20,4,"#8FE59C")
 
     screen.drawText("Niv "+p.niveau+"/"+p.niveau_max,-68,y+11,4,"#C8D0DE")
 
