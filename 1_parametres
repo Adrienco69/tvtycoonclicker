@@ -1,51 +1,48 @@
 Parametres = object
+  temps_minimum = 10
+  niveau_depart_reduction_temps = 10
 
-Parametres.temps_minimum = 10
-Parametres.niveau_depart_reduction_temps = 10
-
-Parametres.blocs = [
-  object
-    id = "shortcom"
-    nom = "Shortcom"
-    total = 10
-    gain_base = 1
-    gain_pas = 1
-    ameliorations = 10
-  end,
-
-  object
-    id = "serie"
-    nom = "Série"
-    total = 20
-    gain_base = 20
-    gain_pas = 20
-    ameliorations = 20
-  end,
-
-  object
-    id = "telefilm"
-    nom = "Film / Téléfilm"
-    total = 30
-    gain_base = 400
-    gain_pas = 400
-    ameliorations = 30
-  end,
-
-  object
-    id = "tvreal"
-    nom = "TV Réalité"
-    total = 40
-    gain_base = 24000
-    gain_pas = 24000
-    ameliorations = 40
-  end
-]
-
-Parametres.get_bloc = function(id)
-  for b in Parametres.blocs
-    if b.id == id then
-      return b
+  blocs = [
+    object
+      id = "shortcom"
+      nom = "Shortcom"
+      total = 10
+      gain_base = 1
+      gain_pas = 1
+      ameliorations = 10
+    end,
+    object
+      id = "serie"
+      nom = "Série"
+      total = 20
+      gain_base = 20
+      gain_pas = 10
+      ameliorations = 20
+    end,
+    object
+      id = "telefilm"
+      nom = "Film / Téléfilm"
+      total = 30
+      gain_base = 400
+      gain_pas = 400
+      ameliorations = 30
+    end,
+    object
+      id = "tvreal"
+      nom = "TV Réalité"
+      total = 40
+      gain_base = 24000
+      gain_pas = 24000
+      ameliorations = 40
     end
+  ]
+
+  get_bloc = function(id)
+    for b in blocs
+      if b.id == id then
+        return b
+      end
+    end
+    return 0
   end
-  return 0
 end
