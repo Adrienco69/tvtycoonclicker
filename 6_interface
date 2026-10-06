@@ -242,13 +242,13 @@ Interface = object
       p = bloc.productions[index]
 
       if p.debloquee then
-        if dans_bouton(40,y+2,90,5) then
+        if dans_bouton(4,y+2,24,10) then
           selection_production = index
           Production.lancer(p)
           return true
         end
 
-        if dans_bouton(40,y-3,90,5) then
+        if dans_bouton(54,y-3,80,5) then
           selection_production = index
           if p.auto_illimite or p.auto_duree_minutes > 0 then
             Ameliorations.recharger_auto(p)
@@ -256,30 +256,36 @@ Interface = object
           return true
         end
 
-        if dans_bouton(108,y,22,10) then
+        if dans_bouton(106,y,22,10) then
           selection_production = index
           Production.acheter_niveau(p)
           return true
         end
 
-        if dans_bouton(135,y,26,10) then
+        if dans_bouton(133,y,26,10) then
           selection_production = index
           Production.acheter_niveaux(p,10)
           return true
         end
 
-        if dans_bouton(164,y,28,10) then
+        if dans_bouton(162,y,28,10) then
           selection_production = index
           Production.acheter_max(p)
           return true
         end
 
-        if dans_bouton(0,y,342,12) then
+        if dans_bouton(196,y,32,10) then
+          selection_production = index
+          menu_ameliorations_ouvert = true
+          return true
+        end
+
+        if dans_bouton(-2,y,390,14) then
           selection_production = index
           return true
         end
 
-        y = y - 14
+        y = y - 18
       end
 
       index = index + 1
@@ -289,24 +295,24 @@ Interface = object
   end
 
   update_lignes_mobile = function(bloc)
-    y = 100
+    y = 102
     index = 0
 
     while index < bloc.productions.length
       p = bloc.productions[index]
 
       if p.debloquee then
-        if dans_bouton(0,y,190,42) then
+        if dans_bouton(0,y,190,54) then
           selection_production = index
         end
 
-        if dans_bouton(0,y-4,142,6) then
+        if dans_bouton(-63,y-11,34,10) then
           selection_production = index
           Production.lancer(p)
           return true
         end
 
-        if dans_bouton(0,y-12,142,6) then
+        if dans_bouton(17,y-19,124,6) then
           selection_production = index
           if p.auto_illimite or p.auto_duree_minutes > 0 then
             Ameliorations.recharger_auto(p)
@@ -314,25 +320,31 @@ Interface = object
           return true
         end
 
-        if dans_bouton(-48,y-18,28,8) then
+        if dans_bouton(-58,y-28,28,8) then
           selection_production = index
           Production.acheter_niveau(p)
           return true
         end
 
-        if dans_bouton(0,y-18,28,8) then
+        if dans_bouton(-10,y-28,28,8) then
           selection_production = index
           Production.acheter_niveaux(p,10)
           return true
         end
 
-        if dans_bouton(48,y-18,28,8) then
+        if dans_bouton(38,y-28,28,8) then
           selection_production = index
           Production.acheter_max(p)
           return true
         end
 
-        y = y - 46
+        if dans_bouton(74,y-28,54,8) then
+          selection_production = index
+          menu_ameliorations_ouvert = true
+          return true
+        end
+
+        y = y - 58
       end
 
       index = index + 1
@@ -379,12 +391,7 @@ Interface = object
     end
 
     if clic_bloc_pc() then return end
-    if update_lignes_pc(bloc) then return end
-
-    if dans_bouton(0,-94,120,16) then
-      menu_ameliorations_ouvert = true
-      return
-    end
+    update_lignes_pc(bloc)
   end
 
   update_mobile = function()
@@ -399,12 +406,7 @@ Interface = object
     end
 
     if clic_bloc_mobile() then return end
-    if update_lignes_mobile(bloc) then return end
-
-    if dans_bouton(0,-105,160,22) then
-      menu_ameliorations_ouvert = true
-      return
-    end
+    update_lignes_mobile(bloc)
   end
 
   update = function()
@@ -422,33 +424,37 @@ Interface = object
     selection = index == selection_production
 
     if selection then
-      screen.fillRect(0,y,342,13,"#283247")
+      screen.fillRect(-2,y,390,14,"#283247")
+    else
+      screen.fillRect(-2,y,390,14,"#243148")
     end
 
     screen.drawText(p.bloc_nom+" "+p.numero,-150,y,5,"#FFFFFF")
     screen.drawText(Production.gain_niveau(p)+" CC",-92,y,5,"#8FE59C")
     screen.drawText(texte_niveau(p),-44,y,4,"#C8D0DE")
 
-    prod = progression_production(p)
-    barre(40,y+2,90,5,prod,"#38414F","#2D8B62")
+    bouton(4,y+2,24,10,"LANCER","#2D8B62",3)
 
+    prod = progression_production(p)
+    barre(54,y+2,80,5,prod,"#38414F","#2D8B62")
     if p.en_cours then
-      screen.drawText(ceil(p.temps_restant)+"s",40,y+2,3,"#FFFFFF")
+      screen.drawText(ceil(p.temps_restant)+"s",54,y+2,3,"#FFFFFF")
     else
-      screen.drawText("PROD",40,y+2,3,"#FFFFFF")
+      screen.drawText("PROD",54,y+2,3,"#FFFFFF")
     end
 
     auto = progression_auto(p)
-    barre(40,y-3,90,5,auto,"#38414F","#9A7726")
-    screen.drawText(texte_auto_court(p),40,y-3,3,"#FFFFFF")
+    barre(54,y-3,80,5,auto,"#38414F","#9A7726")
+    screen.drawText(texte_auto_court(p),54,y-3,3,"#FFFFFF")
 
-    screen.drawText(texte_cout_achat(p,1),108,y+8,3,"#AAB4C4")
-    screen.drawText(texte_cout_achat(p,10),135,y+8,3,"#AAB4C4")
-    screen.drawText(texte_cout_max(p),164,y+8,3,"#AAB4C4")
+    screen.drawText(texte_cout_achat(p,1),106,y+8,3,"#AAB4C4")
+    screen.drawText(texte_cout_achat(p,10),133,y+8,3,"#AAB4C4")
+    screen.drawText(texte_cout_max(p),162,y+8,3,"#AAB4C4")
 
-    bouton(108,y,22,10,"+1","#3C6FA8",4)
-    bouton(135,y,26,10,"+10","#3C6FA8",4)
-    bouton(164,y,28,10,"MAX","#3C6FA8",4)
+    bouton(106,y,22,10,"+1","#3C6FA8",4)
+    bouton(133,y,26,10,"+10","#3C6FA8",4)
+    bouton(162,y,28,10,"MAX","#3C6FA8",4)
+    bouton(196,y,32,10,"AMÉLIO","#7652A8",4)
   end
 
   dessiner_lignes_pc = function(bloc)
@@ -473,48 +479,51 @@ Interface = object
       couleur = "#2A3953"
     end
 
-    screen.fillRect(0,y,190,42,couleur)
+    screen.fillRect(0,y,190,54,couleur)
 
-    screen.drawText(p.bloc_nom+" "+p.numero,-78,y+14,5,"#FFFFFF")
-    screen.drawText(Production.gain_niveau(p)+" CC",72,y+14,5,"#8FE59C")
+    screen.drawText(p.bloc_nom+" "+p.numero,-74,y+20,5,"#FFFFFF")
+    screen.drawText(Production.gain_niveau(p)+" CC",74,y+20,5,"#8FE59C")
 
-    screen.drawText("Niv "+p.niveau+"/"+p.niveau_max,-66,y+6,4,"#C8D0DE")
+    screen.drawText("Niv "+p.niveau+"/"+p.niveau_max,-68,y+11,4,"#C8D0DE")
     cout_txt = Production.cout_suivant(p)
     if cout_txt == 0 then
-      screen.drawText("(MAX)",70,y+6,4,"#C8D0DE")
+      screen.drawText("(MAX)",72,y+11,4,"#C8D0DE")
     else
-      screen.drawText("("+cout_txt+" CC)",70,y+6,4,"#C8D0DE")
+      screen.drawText("("+cout_txt+" CC)",72,y+11,4,"#C8D0DE")
     end
 
+    bouton(-63,y-11,34,10,"LANCER","#2D8B62",3)
+
     prod = progression_production(p)
-    barre(0,y-4,142,6,prod,"#38414F","#2D8B62")
+    barre(17,y-11,124,6,prod,"#38414F","#2D8B62")
     if p.en_cours then
-      screen.drawText("PROD "+ceil(p.temps_restant)+"s",0,y-4,3,"#FFFFFF")
+      screen.drawText("PROD "+ceil(p.temps_restant)+"s",17,y-11,3,"#FFFFFF")
     else
-      screen.drawText("PROD",0,y-4,3,"#FFFFFF")
+      screen.drawText("PROD",17,y-11,3,"#FFFFFF")
     end
 
     auto = progression_auto(p)
-    barre(0,y-12,142,6,auto,"#38414F","#9A7726")
-    screen.drawText(texte_auto_court(p),0,y-12,3,"#FFFFFF")
+    barre(17,y-19,124,6,auto,"#38414F","#9A7726")
+    screen.drawText(texte_auto_court(p),17,y-19,3,"#FFFFFF")
 
-    screen.drawText(texte_cout_achat(p,1),-48,y-24,3,"#AAB4C4")
-    screen.drawText(texte_cout_achat(p,10),0,y-24,3,"#AAB4C4")
-    screen.drawText(texte_cout_max(p),48,y-24,3,"#AAB4C4")
-    bouton(-48,y-18,28,8,"+1","#3C6FA8",3)
-    bouton(0,y-18,28,8,"+10","#3C6FA8",3)
-    bouton(48,y-18,28,8,"MAX","#3C6FA8",3)
+    screen.drawText(texte_cout_achat(p,1),-58,y-34,3,"#AAB4C4")
+    screen.drawText(texte_cout_achat(p,10),-10,y-34,3,"#AAB4C4")
+    screen.drawText(texte_cout_max(p),38,y-34,3,"#AAB4C4")
+    bouton(-58,y-28,28,8,"+1","#3C6FA8",3)
+    bouton(-10,y-28,28,8,"+10","#3C6FA8",3)
+    bouton(38,y-28,28,8,"MAX","#3C6FA8",3)
+    bouton(74,y-28,54,8,"AMÉLIO","#7652A8",3)
   end
 
   dessiner_lignes_mobile = function(bloc)
-    y = 100
+    y = 102
     index = 0
 
     while index < bloc.productions.length
       p = bloc.productions[index]
       if p.debloquee then
         dessiner_ligne_mobile(p,index,y)
-        y = y - 46
+        y = y - 58
       end
       index = index + 1
     end
@@ -571,16 +580,13 @@ Interface = object
     screen.drawText("Programme",-150,57,4,"#8993A3")
     screen.drawText("Gain",-92,57,4,"#8993A3")
     screen.drawText("Niv",-44,57,4,"#8993A3")
-    screen.drawText("Production / Auto",40,57,4,"#8993A3")
-    screen.drawText("Niveaux",136,57,4,"#8993A3")
+    screen.drawText("Lancer / Prod / Auto",32,57,4,"#8993A3")
+    screen.drawText("Niveaux",134,57,4,"#8993A3")
+    screen.drawText("Amélio",196,57,4,"#8993A3")
 
     dessiner_lignes_pc(bloc)
 
     p = production_selectionnee()
-    if p != 0 then
-      bouton(0,-94,120,16,"AMÉLIORATIONS","#7652A8",5)
-    end
-
     screen.drawText(prochain_programme(bloc),0,-108,4,"#8993A3")
 
     if menu_ameliorations_ouvert and p != 0 then
@@ -605,11 +611,7 @@ Interface = object
     dessiner_lignes_mobile(bloc)
 
     p = production_selectionnee()
-    if p != 0 then
-      bouton(0,-105,160,22,"AMÉLIORATIONS","#7652A8",6)
-    end
-
-    screen.drawText(prochain_programme(bloc),0,-120,5,"#8993A3")
+    screen.drawText(prochain_programme(bloc),0,-146,5,"#8993A3")
 
     if menu_ameliorations_ouvert and p != 0 then
       dessiner_panneau_mobile(p)
