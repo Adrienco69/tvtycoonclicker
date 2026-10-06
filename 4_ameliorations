@@ -1,4 +1,6 @@
 Ameliorations = object
+  niveau_max_courant = 100
+
   cout = function(p, prochain_niveau)
     if prochain_niveau < 1 then
       prochain_niveau = 1
@@ -12,10 +14,31 @@ Ameliorations = object
       niveau_competence = 1
     end
 
-    return niveau_competence * 10 - 5
+    premier = ceil(niveau_max_courant / 40)
+    deuxieme = ceil(niveau_max_courant / 20)
+    intervalle = ceil(niveau_max_courant / 10)
+
+    if premier < 1 then
+      premier = 1
+    end
+
+    if deuxieme < premier then
+      deuxieme = premier
+    end
+
+    if intervalle < 1 then
+      intervalle = 1
+    end
+
+    if niveau_competence == 1 then
+      return premier
+    end
+
+    return deuxieme + (niveau_competence - 2) * intervalle
   end
 
   debloquee = function(p,niveau_competence)
+    niveau_max_courant = p.niveau_max
     requis = niveau_requis(niveau_competence)
     return p.niveau >= requis
   end
