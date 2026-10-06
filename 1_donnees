@@ -1,0 +1,128 @@
+Donnees = object
+  programmes = 0
+  competences = 0
+
+  programmes_prets = false
+  competences_pretes = false
+  pret = false
+
+  loader_programmes = 0
+  loader_competences = 0
+
+  initialiser = function()
+    programmes = 0
+    competences = 0
+
+    programmes_prets = false
+    competences_pretes = false
+    pret = false
+
+    loader_programmes = asset_manager.loadJSON("programmes", chargement_programmes_termine)
+    loader_competences = asset_manager.loadJSON("competences", chargement_competences_termine)
+  end
+
+  verifier = function()
+    if programmes_prets and competences_pretes and not pret then
+      pret = true
+      GestionBlocs.initialiser()
+    end
+  end
+
+  liste_programmes = function(bloc_id)
+    if programmes == 0 then
+      return 0
+    end
+
+    if bloc_id == "shortcom" then
+      return programmes.shortcom
+    elsif bloc_id == "serie" then
+      return programmes.serie
+    elsif bloc_id == "telefilm" then
+      return programmes.telefilm
+    elsif bloc_id == "tvreal" then
+      return programmes.tvreal
+    end
+
+    return 0
+  end
+
+  liste_competences = function(bloc_id)
+    if competences == 0 then
+      return 0
+    end
+
+    if bloc_id == "shortcom" then
+      return competences.shortcom
+    elsif bloc_id == "serie" then
+      return competences.serie
+    elsif bloc_id == "telefilm" then
+      return competences.telefilm
+    elsif bloc_id == "tvreal" then
+      return competences.tvreal
+    end
+
+    return 0
+  end
+
+  nom_programme = function(bloc_id,numero,nom_defaut)
+    liste = liste_programmes(bloc_id)
+
+    if liste == 0 then
+      return nom_defaut
+    end
+
+    index = numero - 1
+
+    if index < 0 then
+      return nom_defaut
+    end
+
+    if index >= liste.length then
+      return nom_defaut
+    end
+
+    return liste[index]
+  end
+
+  get_competence = function(bloc_id,niveau)
+    liste = liste_competences(bloc_id)
+
+    if liste == 0 then
+      return 0
+    end
+
+    index = niveau - 1
+
+    if index < 0 then
+      return 0
+    end
+
+    if index >= liste.length then
+      return 0
+    end
+
+    return liste[index]
+  end
+
+  nombre_competences = function(bloc_id)
+    liste = liste_competences(bloc_id)
+
+    if liste == 0 then
+      return 0
+    end
+
+    return liste.length
+  end
+end
+
+chargement_programmes_termine = function(data)
+  Donnees.programmes = data
+  Donnees.programmes_prets = true
+  Donnees.verifier()
+end
+
+chargement_competences_termine = function(data)
+  Donnees.competences = data
+  Donnees.competences_pretes = true
+  Donnees.verifier()
+end
