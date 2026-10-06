@@ -11,6 +11,31 @@ Ameliorations = object
     return Donnees.get_competence(p.bloc_id,niveau)
   end
 
+  appliquer = function(p,competence)
+    if competence == 0 then
+      return false
+    end
+
+    if competence.effet == "gain_fixe" then
+      p.gain_competence = p.gain_competence + competence.valeur
+      return true
+    end
+
+    if competence.effet == "auto" then
+      p.auto_duree_minutes = competence.valeur
+      return true
+    end
+
+    if competence.effet == "auto_infini" then
+      p.auto_illimite = true
+      p.auto_duree_minutes = 0
+      p.auto_restant = 0
+      return true
+    end
+
+    return false
+  end
+
   acheter = function(p)
     if p.competence >= p.competence_max then
       return false
@@ -29,20 +54,12 @@ Ameliorations = object
       return false
     end
 
+    if not appliquer(p,competence) then
+      return false
+    end
+
     Economie.cc = Economie.cc - prix
     p.competence = prochain
-
-    if competence.type == "gain_fixe" then
-      p.gain_competence = p.gain_competence + competence.valeur
-
-    elsif competence.type == "auto" then
-      p.auto_duree_minutes = competence.valeur
-
-    elsif competence.type == "auto_infini" then
-      p.auto_illimite = true
-      p.auto_duree_minutes = 0
-      p.auto_restant = 0
-    end
 
     return true
   end
