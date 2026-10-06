@@ -1,7 +1,4 @@
 Parametres = object
-  temps_minimum = 10
-  niveau_depart_reduction_temps = 10
-
   blocs = [
     object
       id = "shortcom"
