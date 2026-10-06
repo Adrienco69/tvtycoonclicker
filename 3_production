@@ -1,6 +1,7 @@
 Production = object
   creer = function(bloc, numero)
-    local p = object end
+    p = object
+    end
 
     p.bloc_id = bloc.id
     p.bloc_nom = bloc.nom
@@ -14,9 +15,6 @@ Production = object
 
     p.cout_niveau = p.gain_base * 2
 
-    # Temps de production au niveau 1.
-    # Shortcom 1 = 10 s, Shortcom 2 = 20 s, ... Shortcom 10 = 100 s.
-    # Série 1 = 200 s, Série 2 = 400 s, etc.
     if bloc.id == "shortcom" then
       p.temps_base = numero * 10
       p.temps_min = numero
@@ -51,8 +49,8 @@ Production = object
   end
 
   gain_niveau = function(p)
-    local gain = p.gain_base * p.niveau
-    gain *= 1 + p.gain_bonus / 100
+    gain = p.gain_base * p.niveau
+    gain = gain * (1 + p.gain_bonus / 100)
     return floor(gain)
   end
 
@@ -65,8 +63,8 @@ Production = object
       return p.temps_min
     end
 
-    local progression = (p.niveau - 1) / (p.niveau_max - 1)
-    local t = p.temps_base - (p.temps_base - p.temps_min) * progression
+    progression = (p.niveau - 1) / (p.niveau_max - 1)
+    t = p.temps_base - (p.temps_base - p.temps_min) * progression
 
     if t < p.temps_min then
       t = p.temps_min
@@ -76,23 +74,31 @@ Production = object
   end
 
   cout_suivant = function(p)
-    if p.niveau >= p.niveau_max then return 0 end
+    if p.niveau >= p.niveau_max then
+      return 0
+    end
+
     return floor(p.cout_niveau)
   end
 
   acheter_niveau = function(p)
-    if p.niveau >= p.niveau_max then return false end
+    if p.niveau >= p.niveau_max then
+      return false
+    end
 
-    local cout = p.cout_niveau
-    if Economie.cc < cout then return false end
+    cout = p.cout_niveau
 
-    Economie.cc -= cout
-    p.niveau += 1
+    if Economie.cc < cout then
+      return false
+    end
+
+    Economie.cc = Economie.cc - cout
+    p.niveau = p.niveau + 1
 
     if p.niveau % 10 == 0 then
-      p.cout_niveau *= 2
+      p.cout_niveau = p.cout_niveau * 2
     else
-      p.cout_niveau += p.gain_base
+      p.cout_niveau = p.cout_niveau + p.gain_base
     end
 
     p.temps_courant = temps_niveau(p)
@@ -100,10 +106,14 @@ Production = object
   end
 
   lancer = function(p)
-    if p.en_cours then return false end
+    if p.en_cours then
+      return false
+    end
+
     p.temps_courant = temps_niveau(p)
     p.temps_restant = p.temps_courant
     p.en_cours = true
+
     return true
   end
 end
