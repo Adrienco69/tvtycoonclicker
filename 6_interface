@@ -1,0 +1,58 @@
+Interface = object
+
+Interface.dessiner = function()
+  screen.clear("rgb(24,24,28)")
+
+  screen.drawText("TV IDLE CLICKER", 0, 130, 26, "rgb(255,255,255)")
+  screen.drawText("CC : " + floor(Economie.cc), 0, 105, 18, "rgb(255,220,80)")
+
+  if GestionBlocs.blocs.length == 0 then
+    return
+  end
+
+  bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
+
+  screen.drawText(bloc.nom, 0, 78, 20, "rgb(180,220,255)")
+
+  y = 52
+  i = 0
+
+  while i < bloc.productions.length and i < 8
+    p = bloc.productions[i]
+
+    if p.debloquee then
+      gain = Production.gain_niveau(p)
+
+      txt = p.bloc_nom + " " + p.numero +
+        " | Nv " + p.niveau + "/" + p.niveau_max +
+        " | " + gain + " CC" +
+        " | " + Production.temps_niveau(p) + "s"
+
+      if p.auto_illimite then
+        txt += " | AUTO illimité"
+      elsif p.auto_restant > 0 then
+        txt += " | AUTO " + ceil(p.auto_restant) + "s"
+      end
+
+      screen.drawText(txt, -170, y, 10, "rgb(240,240,240)")
+
+      cout = Production.calculer_cout_suivant(p)
+      screen.drawText("Niveau: " + cout + " CC", 60, y, 9, "rgb(150,220,150)")
+
+      if p.amelioration < p.amelioration_max then
+        ca = Ameliorations.cout(p, p.amelioration + 1)
+        screen.drawText("Amélio " + (p.amelioration+1) + ": " + ca + " CC", 60, y-10, 8, "rgb(220,180,255)")
+      else
+        screen.drawText("Améliorations MAX", 60, y-10, 8, "rgb(220,180,255)")
+      end
+
+      y -= 24
+    end
+
+    i += 1
+  end
+
+  screen.drawText("ESPACE = produire", 0, -120, 9, "rgb(170,170,170)")
+  screen.drawText("N = niveau | A = amélioration", 0, -134, 9, "rgb(170,170,170)")
+  screen.drawText("Flèches haut/bas = production | gauche/droite = bloc", 0, -148, 9, "rgb(170,170,170)")
+end
