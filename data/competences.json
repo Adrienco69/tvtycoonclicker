@@ -1,0 +1,81 @@
+{
+  "shortcom": [
+    {
+      "niveau": 1,
+      "nom": "+1 Caméra",
+      "type": "gain_fixe",
+      "valeur": 2,
+      "texte": "+2 CC par production"
+    },
+    {
+      "niveau": 2,
+      "nom": "Automatisation",
+      "type": "auto",
+      "valeur": 2,
+      "unite": "minute",
+      "texte": "AUTO 2 min"
+    },
+    {
+      "niveau": 3,
+      "nom": "+1 Clap",
+      "type": "gain_fixe",
+      "valeur": 3,
+      "texte": "+3 CC par production"
+    },
+    {
+      "niveau": 4,
+      "nom": "Automatisation",
+      "type": "auto",
+      "valeur": 8,
+      "unite": "minute",
+      "texte": "AUTO 8 min"
+    },
+    {
+      "niveau": 5,
+      "nom": "+1 Micro",
+      "type": "gain_fixe",
+      "valeur": 5,
+      "texte": "+5 CC par production"
+    },
+    {
+      "niveau": 6,
+      "nom": "Automatisation",
+      "type": "auto",
+      "valeur": 18,
+      "unite": "minute",
+      "texte": "AUTO 18 min"
+    },
+    {
+      "niveau": 7,
+      "nom": "+1 Éclairage",
+      "type": "gain_fixe",
+      "valeur": 10,
+      "texte": "+10 CC par production"
+    },
+    {
+      "niveau": 8,
+      "nom": "Automatisation",
+      "type": "auto",
+      "valeur": 30,
+      "unite": "minute",
+      "texte": "AUTO 30 min"
+    },
+    {
+      "niveau": 9,
+      "nom": "+1 Station de montage",
+      "type": "gain_fixe",
+      "valeur": 20,
+      "texte": "+20 CC par production"
+    },
+    {
+      "niveau": 10,
+      "nom": "Automatisation totale",
+      "type": "auto_infini",
+      "valeur": -1,
+      "texte": "AUTO illimitée"
+    }
+  ],
+  "serie": [],
+  "telefilm": [],
+  "tvreal": []
+}
