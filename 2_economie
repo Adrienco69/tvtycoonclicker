@@ -1,0 +1,11 @@
+Economie = object
+
+Economie.cc = 0
+Economie.total_gagne = 0
+
+Economie.ajouter = function(montant)
+  if montant <= 0 then return end
+
+  Economie.cc += montant
+  Economie.total_gagne += montant
+end
