@@ -20,16 +20,48 @@ Interface = object
     screen.drawText(texte,x,y,taille,"#FFFFFF")
   end
 
-  bouton_niveau = function(x,y,w,h,texte,cout)
-    screen.fillRect(x,y,w,h,"#3C6FA8")
+  bouton_niveau = function(x,y,w,h,texte,cout,actif)
+    couleur = "#3C6FA8"
+
+    if not actif then
+      couleur = "#555B66"
+    end
+
+    screen.fillRect(x,y,w,h,couleur)
     screen.drawText(texte,x,y+2,4,"#FFFFFF")
     screen.drawText(cout,x,y-3,3,"#DCE8F7")
   end
 
-  bouton_niveau_mobile = function(x,y,w,h,texte,cout)
-    screen.fillRect(x,y,w,h,"#3C6FA8")
+  bouton_niveau_mobile = function(x,y,w,h,texte,cout,actif)
+    couleur = "#3C6FA8"
+
+    if not actif then
+      couleur = "#555B66"
+    end
+
+    screen.fillRect(x,y,w,h,couleur)
     screen.drawText(texte,x,y+2,3,"#FFFFFF")
     screen.drawText(cout,x,y-2,2,"#DCE8F7")
+  end
+
+  peut_acheter_niveaux = function(p,quantite)
+    cout = Production.cout_niveaux(p,quantite)
+
+    if cout <= 0 then
+      return false
+    end
+
+    return Economie.cc >= cout
+  end
+
+  peut_acheter_max = function(p)
+    cout = Production.cout_max(p)
+
+    if cout <= 0 then
+      return false
+    end
+
+    return Economie.cc >= cout
   end
 
   peut_acheter_competence = function(p)
@@ -291,29 +323,37 @@ Interface = object
 
         if dans_bouton(62,y,22,10) then
           selection_production = index
-          Production.acheter_niveau(p)
+
+          if peut_acheter_niveaux(p,1) then
+            Production.acheter_niveau(p)
+          end
+
           return true
         end
 
         if dans_bouton(89,y,26,10) then
           selection_production = index
-          Production.acheter_niveaux(p,10)
+
+          if peut_acheter_niveaux(p,10) then
+            Production.acheter_niveaux(p,10)
+          end
+
           return true
         end
 
         if dans_bouton(118,y,28,10) then
           selection_production = index
-          Production.acheter_max(p)
+
+          if peut_acheter_max(p) then
+            Production.acheter_max(p)
+          end
+
           return true
         end
 
         if dans_bouton(156,y,44,12) then
           selection_production = index
-
-          if peut_acheter_competence(p) then
-            Ameliorations.acheter(p)
-          end
-
+          Ameliorations.acheter(p)
           return true
         end
 
@@ -361,29 +401,37 @@ Interface = object
 
         if dans_bouton(-58,y-28,28,8) then
           selection_production = index
-          Production.acheter_niveau(p)
+
+          if peut_acheter_niveaux(p,1) then
+            Production.acheter_niveau(p)
+          end
+
           return true
         end
 
         if dans_bouton(-10,y-28,28,8) then
           selection_production = index
-          Production.acheter_niveaux(p,10)
+
+          if peut_acheter_niveaux(p,10) then
+            Production.acheter_niveaux(p,10)
+          end
+
           return true
         end
 
         if dans_bouton(38,y-28,28,8) then
           selection_production = index
-          Production.acheter_max(p)
+
+          if peut_acheter_max(p) then
+            Production.acheter_max(p)
+          end
+
           return true
         end
 
         if dans_bouton(74,y-28,58,10) then
           selection_production = index
-
-          if peut_acheter_competence(p) then
-            Ameliorations.acheter(p)
-          end
-
+          Ameliorations.acheter(p)
           return true
         end
 
@@ -460,9 +508,9 @@ Interface = object
     barre(10,y-3,76,5,auto,"#38414F","#9A7726")
     screen.drawText(texte_auto_court(p),10,y-3,3,"#FFFFFF")
 
-    bouton_niveau(62,y,22,10,"+1",texte_cout_achat(p,1))
-    bouton_niveau(89,y,26,10,"+10",texte_cout_achat(p,10))
-    bouton_niveau(118,y,28,10,"MAX",texte_cout_max(p))
+    bouton_niveau(62,y,22,10,"+1",texte_cout_achat(p,1),peut_acheter_niveaux(p,1))
+    bouton_niveau(89,y,26,10,"+10",texte_cout_achat(p,10),peut_acheter_niveaux(p,10))
+    bouton_niveau(118,y,28,10,"MAX",texte_cout_max(p),peut_acheter_max(p))
     bouton_competence(156,y,40,10,"COMPÉTENCE",texte_cout_competence(p),peut_acheter_competence(p))
   end
 
@@ -521,9 +569,9 @@ Interface = object
     barre(17,y-19,124,6,auto,"#38414F","#9A7726")
     screen.drawText(texte_auto_court(p),17,y-19,3,"#FFFFFF")
 
-    bouton_niveau_mobile(-58,y-28,28,8,"+1",texte_cout_achat(p,1))
-    bouton_niveau_mobile(-10,y-28,28,8,"+10",texte_cout_achat(p,10))
-    bouton_niveau_mobile(38,y-28,28,8,"MAX",texte_cout_max(p))
+    bouton_niveau_mobile(-58,y-28,28,8,"+1",texte_cout_achat(p,1),peut_acheter_niveaux(p,1))
+    bouton_niveau_mobile(-10,y-28,28,8,"+10",texte_cout_achat(p,10),peut_acheter_niveaux(p,10))
+    bouton_niveau_mobile(38,y-28,28,8,"MAX",texte_cout_max(p),peut_acheter_max(p))
     bouton_competence_mobile(74,y-28,54,8,"COMPÉTENCE",texte_cout_competence(p),peut_acheter_competence(p))
   end
 
