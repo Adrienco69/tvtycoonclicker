@@ -10,7 +10,10 @@ Production = object
     p.niveau = 1
     p.niveau_max = numero * 100
 
-    p.gain_base = bloc.gain_base + (numero - 1) * bloc.gain_pas
+    pas_gain = bloc.gain_pas
+    decalage_gain = numero - 1
+    ajout_gain = decalage_gain * pas_gain
+    p.gain_base = bloc.gain_base + ajout_gain
     p.gain_bonus = 0
 
     p.cout_niveau = p.gain_base * 2
@@ -22,10 +25,14 @@ Production = object
       p.temps_base = numero * 200
       p.temps_min = 10
     elsif bloc.id == "telefilm" then
-      p.temps_base = 400 + (numero - 1) * 20
+      decalage_temps = numero - 1
+      ajout_temps = decalage_temps * 20
+      p.temps_base = 400 + ajout_temps
       p.temps_min = 10
     elsif bloc.id == "tvreal" then
-      p.temps_base = 800 + (numero - 1) * 30
+      decalage_temps = numero - 1
+      ajout_temps = decalage_temps * 30
+      p.temps_base = 800 + ajout_temps
       p.temps_min = 10
     else
       p.temps_base = numero * 10
@@ -50,7 +57,9 @@ Production = object
 
   gain_niveau = function(p)
     gain = p.gain_base * p.niveau
-    gain = gain * (1 + p.gain_bonus / 100)
+    bonus = p.gain_bonus / 100
+    multiplicateur = 1 + bonus
+    gain = gain * multiplicateur
     return floor(gain)
   end
 
@@ -63,8 +72,13 @@ Production = object
       return p.temps_min
     end
 
-    progression = (p.niveau - 1) / (p.niveau_max - 1)
-    t = p.temps_base - (p.temps_base - p.temps_min) * progression
+    niveau_ecoule = p.niveau - 1
+    niveaux_total = p.niveau_max - 1
+    progression = niveau_ecoule / niveaux_total
+
+    ecart_temps = p.temps_base - p.temps_min
+    reduction = ecart_temps * progression
+    t = p.temps_base - reduction
 
     if t < p.temps_min then
       t = p.temps_min
@@ -95,7 +109,10 @@ Production = object
     Economie.cc = Economie.cc - cout
     p.niveau = p.niveau + 1
 
-    if p.niveau % 10 == 0 then
+    dizaine = floor(p.niveau / 10)
+    reste = p.niveau - dizaine * 10
+
+    if reste == 0 then
       p.cout_niveau = p.cout_niveau * 2
     else
       p.cout_niveau = p.cout_niveau + p.gain_base
