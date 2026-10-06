@@ -14,13 +14,24 @@ Production = object
 
     p.cout_niveau = p.gain_base * 2
 
-    p.temps_base = p.niveau_max
-    if bloc.id == "serie" then
-      p.temps_base = 200 + (numero - 1) * 10
+    # Temps de production au niveau 1.
+    # Shortcom 1 = 10 s, Shortcom 2 = 20 s, ... Shortcom 10 = 100 s.
+    # Série 1 = 200 s, Série 2 = 400 s, etc.
+    if bloc.id == "shortcom" then
+      p.temps_base = numero * 10
+      p.temps_min = numero
+    elsif bloc.id == "serie" then
+      p.temps_base = numero * 200
+      p.temps_min = 10
     elsif bloc.id == "telefilm" then
       p.temps_base = 400 + (numero - 1) * 20
+      p.temps_min = 10
     elsif bloc.id == "tvreal" then
       p.temps_base = 800 + (numero - 1) * 30
+      p.temps_min = 10
+    else
+      p.temps_base = numero * 10
+      p.temps_min = 10
     end
 
     p.temps_courant = p.temps_base
@@ -46,21 +57,20 @@ Production = object
   end
 
   temps_niveau = function(p)
-    if p.niveau < Parametres.niveau_depart_reduction_temps then
+    if p.niveau <= 1 then
       return p.temps_base
     end
 
-    local plage = p.niveau_max - Parametres.niveau_depart_reduction_temps
-    if plage <= 0 then
-      return Parametres.temps_minimum
+    if p.niveau >= p.niveau_max then
+      return p.temps_min
     end
 
-    local progression = (p.niveau - Parametres.niveau_depart_reduction_temps) / plage
-    if progression < 0 then progression = 0 end
-    if progression > 1 then progression = 1 end
+    local progression = (p.niveau - 1) / (p.niveau_max - 1)
+    local t = p.temps_base - (p.temps_base - p.temps_min) * progression
 
-    local t = p.temps_base - (p.temps_base - Parametres.temps_minimum) * progression
-    if t < Parametres.temps_minimum then t = Parametres.temps_minimum end
+    if t < p.temps_min then
+      t = p.temps_min
+    end
 
     return round(t)
   end
