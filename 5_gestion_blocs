@@ -1,0 +1,104 @@
+GestionBlocs = object
+
+GestionBlocs.blocs = []
+GestionBlocs.bloc_actif = 0
+
+GestionBlocs.initialiser = function()
+  GestionBlocs.blocs = []
+
+  for config in Parametres.blocs
+    bloc = object
+      id = config.id
+      nom = config.nom
+      total = config.total
+      debloque = false
+      productions = []
+    end
+
+    numero = 1
+    while numero <= config.total
+      p = Production.creer(config, numero)
+      bloc.productions.push(p)
+      numero += 1
+    end
+
+    GestionBlocs.blocs.push(bloc)
+  end
+
+  if GestionBlocs.blocs.length > 0 then
+    GestionBlocs.blocs[0].debloque = true
+    GestionBlocs.blocs[0].productions[0].debloquee = true
+    GestionBlocs.bloc_actif = 0
+  end
+end
+
+GestionBlocs.verifier_deblocages = function()
+  bindex = 0
+
+  while bindex < GestionBlocs.blocs.length
+    bloc = GestionBlocs.blocs[bindex]
+
+    if bloc.debloque then
+      i = 0
+      while i < bloc.productions.length
+        p = bloc.productions[i]
+
+        if p.debloquee then
+          suivant = i + 1
+
+          if suivant < bloc.productions.length then
+            seuil = p.numero * 50
+            if p.niveau >= seuil then
+              bloc.productions[suivant].debloquee = true
+            end
+          end
+        end
+
+        i += 1
+      end
+
+      if bindex + 1 < GestionBlocs.blocs.length then
+        cible_num = bloc.total - 4
+        cible_index = cible_num - 1
+
+        if cible_index >= 0 and cible_index < bloc.productions.length then
+          if bloc.productions[cible_index].debloquee then
+            GestionBlocs.blocs[bindex + 1].debloque = true
+            GestionBlocs.blocs[bindex + 1].productions[0].debloquee = true
+          end
+        end
+      end
+    end
+
+    bindex += 1
+  end
+end
+
+GestionBlocs.update = function(dt)
+  for bloc in GestionBlocs.blocs
+    if bloc.debloque then
+      for p in bloc.productions
+        if p.debloquee then
+          if p.auto_restant > 0 then
+            p.auto_restant -= dt
+            if p.auto_restant < 0 then p.auto_restant = 0 end
+          end
+
+          auto_actif = p.auto_illimite or p.auto_restant > 0
+
+          if auto_actif then
+            p.temps_restant -= dt
+
+            if p.temps_restant <= 0 then
+              Economie.ajouter(Production.gain_niveau(p))
+              p.temps_courant = Production.temps_niveau(p)
+              p.temps_restant = p.temps_courant
+            end
+          end
+        end
+      end
+    end
+  end
+
+  GestionBlocs.verifier_deblocages()
+end
