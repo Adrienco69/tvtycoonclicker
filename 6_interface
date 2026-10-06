@@ -430,8 +430,8 @@ Interface = object
     end
 
     screen.drawText(p.bloc_nom+" "+p.numero,-150,y,5,"#FFFFFF")
-    screen.drawText(Production.gain_niveau(p)+" CC",-92,y,5,"#8FE59C")
-    screen.drawText(texte_niveau(p),-44,y,4,"#C8D0DE")
+    screen.drawText(Production.gain_niveau(p)+" CC",-118,y,5,"#8FE59C")
+    screen.drawText(texte_niveau(p),-82,y,4,"#C8D0DE")
 
     bouton(4,y+2,24,10,"LANCER","#2D8B62",3)
 
@@ -578,8 +578,8 @@ Interface = object
     screen.drawText(bloc.nom,0,67,10,"#BFE1FF")
 
     screen.drawText("Programme",-150,57,4,"#8993A3")
-    screen.drawText("Gain",-92,57,4,"#8993A3")
-    screen.drawText("Niv",-44,57,4,"#8993A3")
+    screen.drawText("Gain",-118,57,4,"#8993A3")
+    screen.drawText("Niv",-82,57,4,"#8993A3")
     screen.drawText("Lancer / Prod / Auto",32,57,4,"#8993A3")
     screen.drawText("Niveaux",134,57,4,"#8993A3")
     screen.drawText("Amélio",196,57,4,"#8993A3")
