@@ -1,66 +1,67 @@
 Ameliorations = object
   cout = function(p, prochain_niveau)
-    if prochain_niveau < 1 then prochain_niveau = 1 end
+    if prochain_niveau < 1 then
+      prochain_niveau = 1
+    end
+
     return floor(p.gain_base * 4 * (2 ^ (prochain_niveau - 1)))
   end
 
-  bonus_gain_cible = function(p, niveau_amelioration)
-    local nb_impairs = ceil(p.amelioration_max / 2)
-    local rang = ceil(niveau_amelioration / 2)
-
-    if nb_impairs <= 1 then return 50 end
-
-    local bonus = 2 + (rang - 1) * (48 / (nb_impairs - 1))
-    if bonus > 50 then bonus = 50 end
-    return round(bonus)
-  end
-
-  auto_minutes = function(p, niveau_amelioration)
-    local nb_auto = floor(p.amelioration_max / 2)
-    local rang = floor(niveau_amelioration / 2)
-
-    if rang >= nb_auto then return -1 end
-    if rang <= 1 then return 2 end
-
-    local ratio = (rang - 1) / (nb_auto - 2)
-    local minutes = 2 + ratio * 28
-    if minutes > 30 then minutes = 30 end
-    if minutes < 2 then minutes = 2 end
-    return round(minutes)
+  get = function(p,niveau)
+    return Donnees.get_competence(p.bloc_id,niveau)
   end
 
   acheter = function(p)
-    if p.amelioration >= p.amelioration_max then return false end
+    if p.competence >= p.competence_max then
+      return false
+    end
 
-    local prochain = p.amelioration + 1
-    local prix = cout(p, prochain)
-    if Economie.cc < prix then return false end
+    prochain = p.competence + 1
+    competence = get(p,prochain)
 
-    Economie.cc -= prix
-    p.amelioration = prochain
+    if competence == 0 then
+      return false
+    end
 
-    if prochain % 2 == 1 then
-      p.gain_bonus = bonus_gain_cible(p, prochain)
-    else
-      local minutes = auto_minutes(p, prochain)
-      if minutes == -1 then
-        p.auto_illimite = true
-        p.auto_duree_minutes = 0
-        p.auto_restant = 0
-      else
-        p.auto_duree_minutes = minutes
-      end
+    prix = cout(p,prochain)
+
+    if Economie.cc < prix then
+      return false
+    end
+
+    Economie.cc = Economie.cc - prix
+    p.competence = prochain
+
+    if competence.type == "gain_fixe" then
+      p.gain_competence = p.gain_competence + competence.valeur
+
+    elsif competence.type == "auto" then
+      p.auto_duree_minutes = competence.valeur
+
+    elsif competence.type == "auto_infini" then
+      p.auto_illimite = true
+      p.auto_duree_minutes = 0
+      p.auto_restant = 0
     end
 
     return true
   end
 
   recharger_auto = function(p)
-    if p.auto_illimite then return true end
-    if p.auto_duree_minutes <= 0 then return false end
+    if p.auto_illimite then
+      return true
+    end
+
+    if p.auto_duree_minutes <= 0 then
+      return false
+    end
 
     p.auto_restant = p.auto_duree_minutes * 60
-    if not p.en_cours then Production.lancer(p) end
+
+    if not p.en_cours then
+      Production.lancer(p)
+    end
+
     return true
   end
 end
