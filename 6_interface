@@ -170,6 +170,29 @@ Interface = object
     return "AUTO À DÉBLOQUER"
   end
 
+  texte_prochain = function(bloc,p)
+    index_suivant = p.numero
+
+    if index_suivant < bloc.productions.length then
+      suivant = bloc.productions[index_suivant]
+
+      if not suivant.debloquee then
+        seuil = p.numero * 50
+        return "Prochain : "+suivant.bloc_nom+" "+suivant.numero+" au niveau "+seuil
+      end
+    end
+
+    if GestionBlocs.bloc_actif + 1 < GestionBlocs.blocs.length then
+      bloc_suivant = GestionBlocs.blocs[GestionBlocs.bloc_actif + 1]
+      if not bloc_suivant.debloque then
+        cible = bloc.total - 4
+        return "Bloc suivant : "+bloc_suivant.nom+" à "+bloc.nom+" "+cible
+      end
+    end
+
+    return "Tous les déblocages disponibles sont atteints"
+  end
+
   dessiner_pc = function(bloc,p)
     screen.drawText("TV TYCOON CLICKER",0,90,13,"#FFFFFF")
     screen.drawText("CC : "+floor(Economie.cc),0,76,10,"#FFD45A")
@@ -212,7 +235,8 @@ Interface = object
       bouton(0,-70,150,20,texte_auto(p),"#555B66",6)
     end
 
-    screen.drawText("Souris",0,-92,6,"#8993A3")
+    screen.drawText("Temps : "+Production.temps_niveau(p)+" s",0,-89,6,"#AAB4C4")
+    screen.drawText(texte_prochain(bloc,p),0,-99,5,"#8993A3")
   end
 
   dessiner_mobile = function(bloc,p)
@@ -257,7 +281,8 @@ Interface = object
       bouton(0,-121,170,30,texte_auto(p),"#555B66",7)
     end
 
-    screen.drawText("Tactile",0,-157,7,"#8993A3")
+    screen.drawText("Temps : "+Production.temps_niveau(p)+" s",0,-151,7,"#AAB4C4")
+    screen.drawText(texte_prochain(bloc,p),0,-164,6,"#8993A3")
   end
 
   dessiner = function()
