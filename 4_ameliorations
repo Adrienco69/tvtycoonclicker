@@ -12,6 +12,16 @@ Ameliorations = object
       niveau_competence = 1
     end
 
+    if p.numero == 1 then
+      requis = 5 + (niveau_competence - 1) * 10
+
+      if requis > p.niveau_max then
+        requis = p.niveau_max
+      end
+
+      return requis
+    end
+
     if niveau_competence == 1 then
       return 5
     end
