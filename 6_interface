@@ -511,7 +511,7 @@ Interface = object
     bouton_niveau(62,y,22,10,"+1",texte_cout_achat(p,1),peut_acheter_niveaux(p,1))
     bouton_niveau(89,y,26,10,"+10",texte_cout_achat(p,10),peut_acheter_niveaux(p,10))
     bouton_niveau(118,y,28,10,"MAX",texte_cout_max(p),peut_acheter_max(p))
-    bouton_competence(156,y,40,10,"COMPÉTENCE",texte_cout_competence(p),peut_acheter_competence(p))
+    bouton_competence(156,y,40,10,"COMPÉTENCE "+p.competence+"/"+p.competence_max,texte_cout_competence(p),peut_acheter_competence(p))
   end
 
   dessiner_lignes_pc = function(bloc)
@@ -572,7 +572,7 @@ Interface = object
     bouton_niveau_mobile(-58,y-28,28,8,"+1",texte_cout_achat(p,1),peut_acheter_niveaux(p,1))
     bouton_niveau_mobile(-10,y-28,28,8,"+10",texte_cout_achat(p,10),peut_acheter_niveaux(p,10))
     bouton_niveau_mobile(38,y-28,28,8,"MAX",texte_cout_max(p),peut_acheter_max(p))
-    bouton_competence_mobile(74,y-28,54,8,"COMPÉTENCE",texte_cout_competence(p),peut_acheter_competence(p))
+    bouton_competence_mobile(74,y-28,54,8,"COMPÉTENCE "+p.competence+"/"+p.competence_max,texte_cout_competence(p),peut_acheter_competence(p))
   end
 
   dessiner_lignes_mobile = function(bloc)
