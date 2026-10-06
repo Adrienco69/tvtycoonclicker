@@ -1,15 +1,25 @@
 selection_production = 0
 
 init = function()
-  GestionBlocs.initialiser()
+  Donnees.initialiser()
 end
 
 update = function()
+  if not Donnees.pret then
+    return
+  end
+
   local dt = 1 / 60
   GestionBlocs.update(dt)
   Interface.update()
 end
 
 draw = function()
-  Interface.dessiner()
+  if Donnees.pret then
+    Interface.dessiner()
+  else
+    screen.clear("#151821")
+    screen.drawText("TV TYCOON CLICKER",0,20,12,"#FFFFFF")
+    screen.drawText("Chargement des données...",0,0,7,"#FFD45A")
+  end
 end
