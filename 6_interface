@@ -20,26 +20,6 @@ Interface = object
     screen.drawText(texte,x,y,taille,"#FFFFFF")
   end
 
-  nb_productions_debloquees = function(bloc)
-    total = 0
-    for prod in bloc.productions
-      if prod.debloquee then
-        total = total + 1
-      end
-    end
-    return total
-  end
-
-  nb_blocs_debloques = function()
-    total = 0
-    for bloc in GestionBlocs.blocs
-      if bloc.debloque then
-        total = total + 1
-      end
-    end
-    return total
-  end
-
   production_actuelle = function()
     if GestionBlocs.blocs.length == 0 then
       return 0
@@ -54,45 +34,63 @@ Interface = object
     return bloc.productions[selection_production]
   end
 
+  peut_prod_gauche = function()
+    return selection_production > 0
+  end
+
+  peut_prod_droite = function(bloc)
+    suivant_prod = selection_production + 1
+
+    if suivant_prod >= bloc.productions.length then
+      return false
+    end
+
+    return bloc.productions[suivant_prod].debloquee
+  end
+
+  peut_bloc_gauche = function()
+    return GestionBlocs.bloc_actif > 0
+  end
+
+  peut_bloc_droite = function()
+    suivant_bloc = GestionBlocs.bloc_actif + 1
+
+    if suivant_bloc >= GestionBlocs.blocs.length then
+      return false
+    end
+
+    return GestionBlocs.blocs[suivant_bloc].debloque
+  end
+
   clic_navigation = function(gauche_x,droite_x,prod_y,bloc_y,w_prod,h_prod,w_bloc,h_bloc)
     bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
 
-    if nb_productions_debloquees(bloc) > 1 then
+    if peut_prod_gauche() then
       if dans_bouton(gauche_x,prod_y,w_prod,h_prod) then
-        if selection_production > 0 then
-          selection_production = selection_production - 1
-        end
-        return true
-      end
-
-      if dans_bouton(droite_x,prod_y,w_prod,h_prod) then
-        suivant_prod = selection_production + 1
-        if suivant_prod < bloc.productions.length then
-          if bloc.productions[suivant_prod].debloquee then
-            selection_production = suivant_prod
-          end
-        end
+        selection_production = selection_production - 1
         return true
       end
     end
 
-    if nb_blocs_debloques() > 1 then
-      if dans_bouton(gauche_x,bloc_y,w_bloc,h_bloc) then
-        if GestionBlocs.bloc_actif > 0 then
-          GestionBlocs.bloc_actif = GestionBlocs.bloc_actif - 1
-          selection_production = 0
-        end
+    if peut_prod_droite(bloc) then
+      if dans_bouton(droite_x,prod_y,w_prod,h_prod) then
+        selection_production = selection_production + 1
         return true
       end
+    end
 
+    if peut_bloc_gauche() then
+      if dans_bouton(gauche_x,bloc_y,w_bloc,h_bloc) then
+        GestionBlocs.bloc_actif = GestionBlocs.bloc_actif - 1
+        selection_production = 0
+        return true
+      end
+    end
+
+    if peut_bloc_droite() then
       if dans_bouton(droite_x,bloc_y,w_bloc,h_bloc) then
-        suivant_bloc = GestionBlocs.bloc_actif + 1
-        if suivant_bloc < GestionBlocs.blocs.length then
-          if GestionBlocs.blocs[suivant_bloc].debloque then
-            GestionBlocs.bloc_actif = suivant_bloc
-            selection_production = 0
-          end
-        end
+        GestionBlocs.bloc_actif = GestionBlocs.bloc_actif + 1
+        selection_production = 0
         return true
       end
     end
@@ -243,14 +241,21 @@ Interface = object
     screen.drawText("TV TYCOON CLICKER",0,92,11,"#FFFFFF")
     screen.drawText("CC : "+floor(Economie.cc),0,80,9,"#FFD45A")
 
-    if nb_blocs_debloques() > 1 then
+    if peut_bloc_gauche() then
       bouton(-154,60,20,16,"<","#39465C",7)
+    end
+
+    if peut_bloc_droite() then
       bouton(154,60,20,16,">","#39465C",7)
     end
+
     screen.drawText(bloc.nom,0,60,10,"#BFE1FF")
 
-    if nb_productions_debloquees(bloc) > 1 then
+    if peut_prod_gauche() then
       bouton(-154,42,20,18,"<","#39465C",7)
+    end
+
+    if peut_prod_droite(bloc) then
       bouton(154,42,20,18,">","#39465C",7)
     end
 
@@ -292,14 +297,21 @@ Interface = object
     screen.drawText("TV TYCOON CLICKER",0,164,15,"#FFFFFF")
     screen.drawText("CC : "+floor(Economie.cc),0,146,11,"#FFD45A")
 
-    if nb_blocs_debloques() > 1 then
+    if peut_bloc_gauche() then
       bouton(-78,125,32,28,"<","#39465C",10)
+    end
+
+    if peut_bloc_droite() then
       bouton(78,125,32,28,">","#39465C",10)
     end
+
     screen.drawText(bloc.nom,0,125,12,"#BFE1FF")
 
-    if nb_productions_debloquees(bloc) > 1 then
+    if peut_prod_gauche() then
       bouton(-78,82,32,32,"<","#39465C",10)
+    end
+
+    if peut_prod_droite(bloc) then
       bouton(78,82,32,32,">","#39465C",10)
     end
 
