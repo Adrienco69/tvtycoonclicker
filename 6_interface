@@ -226,7 +226,7 @@ Interface = object
       if not p.debloquee then
         if index > 0 then
           precedent = bloc.productions[index-1]
-          seuil = precedent.numero * 50
+          seuil = precedent.numero * 10
           return "Prochain programme : niveau "+seuil
         end
       end
