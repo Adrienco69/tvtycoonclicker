@@ -57,8 +57,13 @@ Production = object
     return p
   end
 
-  gain_niveau = function(p)
+  gain_normal = function(p)
     gain = p.gain_base * p.niveau
+    return floor(gain)
+  end
+
+  gain_niveau = function(p)
+    gain = gain_normal(p)
     gain = gain + p.gain_competence
     return floor(gain)
   end
