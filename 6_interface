@@ -1,136 +1,283 @@
 Interface = object
+  est_mobile = function()
+    if screen.height > screen.width then
+      return true
+    end
+
+    if system.inputs.touch and not system.inputs.mouse then
+      return true
+    end
+
+    return false
+  end
+
   dans_bouton = function(x,y,w,h)
     return mouse.x >= x-w/2 and mouse.x <= x+w/2 and mouse.y >= y-h/2 and mouse.y <= y+h/2
   end
 
-  bouton = function(x,y,w,h,texte,couleur)
+  bouton = function(x,y,w,h,texte,couleur,taille)
     screen.fillRect(x,y,w,h,couleur)
-    screen.drawText(texte,x,y,10,"#FFFFFF")
+    screen.drawText(texte,x,y,taille,"#FFFFFF")
+  end
+
+  production_actuelle = function()
+    if GestionBlocs.blocs.length == 0 then
+      return 0
+    end
+
+    bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
+
+    if selection_production >= bloc.productions.length then
+      selection_production = bloc.productions.length - 1
+    end
+
+    return bloc.productions[selection_production]
+  end
+
+  clic_navigation = function(gauche_x,droite_x,prod_y,bloc_y,w_prod,h_prod,w_bloc,h_bloc)
+    bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
+
+    if dans_bouton(gauche_x,prod_y,w_prod,h_prod) then
+      if selection_production > 0 then
+        selection_production = selection_production - 1
+      end
+      return true
+    end
+
+    if dans_bouton(droite_x,prod_y,w_prod,h_prod) then
+      suivant_prod = selection_production + 1
+      if suivant_prod < bloc.productions.length then
+        if bloc.productions[suivant_prod].debloquee then
+          selection_production = suivant_prod
+        end
+      end
+      return true
+    end
+
+    if dans_bouton(gauche_x,bloc_y,w_bloc,h_bloc) then
+      if GestionBlocs.bloc_actif > 0 then
+        GestionBlocs.bloc_actif = GestionBlocs.bloc_actif - 1
+        selection_production = 0
+      end
+      return true
+    end
+
+    if dans_bouton(droite_x,bloc_y,w_bloc,h_bloc) then
+      suivant_bloc = GestionBlocs.bloc_actif + 1
+      if suivant_bloc < GestionBlocs.blocs.length then
+        if GestionBlocs.blocs[suivant_bloc].debloque then
+          GestionBlocs.bloc_actif = suivant_bloc
+          selection_production = 0
+        end
+      end
+      return true
+    end
+
+    return false
+  end
+
+  update_pc = function()
+    if clic_navigation(-150,150,38,60,24,20,24,18) then
+      return
+    end
+
+    p = production_actuelle()
+    if p == 0 then return end
+    if not p.debloquee then return end
+
+    if dans_bouton(0,-2,150,26) then
+      Production.lancer(p)
+      return
+    end
+
+    if dans_bouton(-65,-38,115,24) then
+      Production.acheter_niveau(p)
+      return
+    end
+
+    if dans_bouton(65,-38,115,24) then
+      Ameliorations.acheter(p)
+      return
+    end
+
+    if dans_bouton(0,-70,150,20) then
+      Ameliorations.recharger_auto(p)
+      return
+    end
+  end
+
+  update_mobile = function()
+    if clic_navigation(-78,78,82,125,32,32,32,28) then
+      return
+    end
+
+    p = production_actuelle()
+    if p == 0 then return end
+    if not p.debloquee then return end
+
+    if dans_bouton(0,22,170,44) then
+      Production.lancer(p)
+      return
+    end
+
+    if dans_bouton(0,-35,170,34) then
+      Production.acheter_niveau(p)
+      return
+    end
+
+    if dans_bouton(0,-78,170,34) then
+      Ameliorations.acheter(p)
+      return
+    end
+
+    if dans_bouton(0,-121,170,30) then
+      Ameliorations.recharger_auto(p)
+      return
+    end
   end
 
   update = function()
     if not mouse.press then return end
     if GestionBlocs.blocs.length == 0 then return end
 
-    local bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
-    if selection_production >= bloc.productions.length then selection_production = bloc.productions.length-1 end
-    local p = bloc.productions[selection_production]
+    if est_mobile() then
+      update_mobile()
+    else
+      update_pc()
+    end
+  end
 
-    if dans_bouton(-165,70,38,28) then
-      if selection_production > 0 then selection_production -= 1 end
-      return
+  texte_production = function(p)
+    texte = "PRODUIRE"
+    if p.en_cours then
+      texte = "Production : "+ceil(p.temps_restant)+" s"
+    end
+    return texte
+  end
+
+  texte_auto = function(p)
+    if p.auto_illimite then
+      return "AUTOMATISATION ILLIMITÉE"
     end
 
-    if dans_bouton(165,70,38,28) then
-      if selection_production + 1 < bloc.productions.length then
-        if bloc.productions[selection_production+1].debloquee then
-          selection_production += 1
-        end
+    if p.auto_duree_minutes > 0 then
+      if p.auto_restant > 0 then
+        return "AUTO : "+ceil(p.auto_restant)+" s"
       end
+      return "RECHARGER AUTO "+p.auto_duree_minutes+" min"
+    end
+
+    return "AUTO À DÉBLOQUER"
+  end
+
+  dessiner_pc = function(bloc,p)
+    screen.drawText("TV TYCOON CLICKER",0,90,13,"#FFFFFF")
+    screen.drawText("CC : "+floor(Economie.cc),0,76,10,"#FFD45A")
+
+    bouton(-150,60,24,18,"<","#39465C",8)
+    bouton(150,60,24,18,">","#39465C",8)
+    screen.drawText(bloc.nom,0,60,11,"#BFE1FF")
+
+    bouton(-150,38,24,20,"<","#39465C",8)
+    bouton(150,38,24,20,">","#39465C",8)
+
+    if not p.debloquee then
+      screen.drawText("Production verrouillée",0,20,12,"#AAAAAA")
       return
     end
 
-    if dans_bouton(-165,105,38,24) then
-      if GestionBlocs.bloc_actif > 0 then
-        GestionBlocs.bloc_actif -= 1
-        selection_production = 0
-      end
+    screen.drawText(p.bloc_nom+" "+p.numero,0,42,13,"#FFFFFF")
+    screen.drawText("Niveau "+p.niveau+" / "+p.niveau_max,0,28,8,"#C8D0DE")
+    screen.drawText("Gain : "+Production.gain_niveau(p)+" CC  (+"+p.gain_bonus+"%)",0,18,7,"#8FE59C")
+
+    bouton(0,-2,150,26,texte_production(p),"#2D8B62",8)
+
+    cout_niveau = Production.cout_suivant(p)
+    if cout_niveau == 0 then
+      bouton(-65,-38,115,24,"NIVEAU MAX","#555B66",7)
+    else
+      bouton(-65,-38,115,24,"NIVEAU +1  "+cout_niveau+" CC","#3C6FA8",7)
+    end
+
+    if p.amelioration >= p.amelioration_max then
+      bouton(65,-38,115,24,"AMÉLIORATIONS MAX","#555B66",7)
+    else
+      prix = Ameliorations.cout(p,p.amelioration+1)
+      bouton(65,-38,115,24,"AMÉLIO "+(p.amelioration+1)+"  "+prix+" CC","#7652A8",7)
+    end
+
+    if p.auto_illimite or p.auto_duree_minutes > 0 then
+      bouton(0,-70,150,20,texte_auto(p),"#9A7726",6)
+    else
+      bouton(0,-70,150,20,texte_auto(p),"#555B66",6)
+    end
+
+    screen.drawText("Souris",0,-92,6,"#8993A3")
+  end
+
+  dessiner_mobile = function(bloc,p)
+    screen.drawText("TV TYCOON CLICKER",0,164,15,"#FFFFFF")
+    screen.drawText("CC : "+floor(Economie.cc),0,146,11,"#FFD45A")
+
+    bouton(-78,125,32,28,"<","#39465C",10)
+    bouton(78,125,32,28,">","#39465C",10)
+    screen.drawText(bloc.nom,0,125,12,"#BFE1FF")
+
+    bouton(-78,82,32,32,"<","#39465C",10)
+    bouton(78,82,32,32,">","#39465C",10)
+
+    if not p.debloquee then
+      screen.drawText("Production verrouillée",0,45,12,"#AAAAAA")
       return
     end
 
-    if dans_bouton(165,105,38,24) then
-      local suivant = GestionBlocs.bloc_actif + 1
-      if suivant < GestionBlocs.blocs.length then
-        if GestionBlocs.blocs[suivant].debloque then
-          GestionBlocs.bloc_actif = suivant
-          selection_production = 0
-        end
-      end
-      return
+    screen.drawText(p.bloc_nom+" "+p.numero,0,91,14,"#FFFFFF")
+    screen.drawText("Niveau "+p.niveau+" / "+p.niveau_max,0,68,9,"#C8D0DE")
+    screen.drawText("Gain : "+Production.gain_niveau(p)+" CC  (+"+p.gain_bonus+"%)",0,54,8,"#8FE59C")
+
+    bouton(0,22,170,44,texte_production(p),"#2D8B62",10)
+
+    cout_niveau = Production.cout_suivant(p)
+    if cout_niveau == 0 then
+      bouton(0,-35,170,34,"NIVEAU MAX","#555B66",9)
+    else
+      bouton(0,-35,170,34,"NIVEAU +1  "+cout_niveau+" CC","#3C6FA8",9)
     end
 
-    if not p.debloquee then return end
-
-    if dans_bouton(0,15,220,52) then
-      Production.lancer(p)
-      return
+    if p.amelioration >= p.amelioration_max then
+      bouton(0,-78,170,34,"AMÉLIORATIONS MAX","#555B66",8)
+    else
+      prix = Ameliorations.cout(p,p.amelioration+1)
+      bouton(0,-78,170,34,"AMÉLIO "+(p.amelioration+1)+"  "+prix+" CC","#7652A8",8)
     end
 
-    if dans_bouton(-92,-52,160,38) then
-      Production.acheter_niveau(p)
-      return
+    if p.auto_illimite or p.auto_duree_minutes > 0 then
+      bouton(0,-121,170,30,texte_auto(p),"#9A7726",7)
+    else
+      bouton(0,-121,170,30,texte_auto(p),"#555B66",7)
     end
 
-    if dans_bouton(92,-52,160,38) then
-      Ameliorations.acheter(p)
-      return
-    end
-
-    if dans_bouton(0,-102,220,34) then
-      Ameliorations.recharger_auto(p)
-      return
-    end
+    screen.drawText("Tactile",0,-157,7,"#8993A3")
   end
 
   dessiner = function()
     screen.clear("#151821")
 
-    screen.drawText("TV TYCOON CLICKER",0,135,22,"#FFFFFF")
-    screen.drawText("CC : "+floor(Economie.cc),0,112,16,"#FFD45A")
-
-    if GestionBlocs.blocs.length == 0 then return end
-
-    local bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
-    local p = bloc.productions[selection_production]
-
-    bouton(-165,105,38,24,"<","#39465C")
-    bouton(165,105,38,24,">","#39465C")
-    screen.drawText(bloc.nom,0,96,17,"#BFE1FF")
-
-    bouton(-165,70,38,28,"<","#39465C")
-    bouton(165,70,38,28,">","#39465C")
-
-    if not p.debloquee then
-      screen.drawText("Production verrouillée",0,35,18,"#AAAAAA")
+    if GestionBlocs.blocs.length == 0 then
       return
     end
 
-    screen.drawText(p.bloc_nom+" "+p.numero,0,70,18,"#FFFFFF")
-    screen.drawText("Niveau "+p.niveau+" / "+p.niveau_max,0,52,12,"#C8D0DE")
-    screen.drawText("Gain : "+Production.gain_niveau(p)+" CC  (+"+p.gain_bonus+"%)",0,38,11,"#8FE59C")
+    bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
+    p = production_actuelle()
 
-    local texte_prod = "PRODUIRE"
-    if p.en_cours then
-      texte_prod = "Production : "+ceil(p.temps_restant)+" s"
+    if p == 0 then
+      return
     end
-    bouton(0,15,220,52,texte_prod,"#2D8B62")
 
-    local cout_niveau = Production.cout_suivant(p)
-    if cout_niveau == 0 then
-      bouton(-92,-52,160,38,"NIVEAU MAX","#555B66")
+    if est_mobile() then
+      dessiner_mobile(bloc,p)
     else
-      bouton(-92,-52,160,38,"NIVEAU +1  "+cout_niveau+" CC","#3C6FA8")
+      dessiner_pc(bloc,p)
     end
-
-    if p.amelioration >= p.amelioration_max then
-      bouton(92,-52,160,38,"AMÉLIORATIONS MAX","#555B66")
-    else
-      local prix = Ameliorations.cout(p,p.amelioration+1)
-      bouton(92,-52,160,38,"AMÉLIO "+(p.amelioration+1)+"  "+prix+" CC","#7652A8")
-    end
-
-    if p.auto_illimite then
-      bouton(0,-102,220,34,"AUTOMATISATION ILLIMITÉE","#9A7726")
-    elsif p.auto_duree_minutes > 0 then
-      local auto_txt = "RECHARGER AUTO "+p.auto_duree_minutes+" min"
-      if p.auto_restant > 0 then
-        auto_txt = "AUTO : "+ceil(p.auto_restant)+" s restantes"
-      end
-      bouton(0,-102,220,34,auto_txt,"#9A7726")
-    else
-      bouton(0,-102,220,34,"AUTO À DÉBLOQUER","#555B66")
-    end
-
-    screen.drawText("Souris / tactile uniquement",0,-132,9,"#8993A3")
   end
 end
