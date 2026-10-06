@@ -23,6 +23,18 @@ Interface = object
     screen.drawText(texte,x,y,taille,"#FFFFFF")
   end
 
+  bouton_niveau = function(x,y,w,h,texte,cout)
+    screen.fillRect(x,y,w,h,"#3C6FA8")
+    screen.drawText(texte,x,y+2,4,"#FFFFFF")
+    screen.drawText(cout,x,y-3,3,"#DCE8F7")
+  end
+
+  bouton_niveau_mobile = function(x,y,w,h,texte,cout)
+    screen.fillRect(x,y,w,h,"#3C6FA8")
+    screen.drawText(texte,x,y+2,3,"#FFFFFF")
+    screen.drawText(cout,x,y-2,2,"#DCE8F7")
+  end
+
   peut_bloc_gauche = function()
     return GestionBlocs.bloc_actif > 0
   end
@@ -133,9 +145,10 @@ Interface = object
 
   texte_gain = function(p)
     normal = Production.gain_normal(p)
+    bonus = Production.gain_competence_total(p)
 
-    if p.gain_competence > 0 then
-      return normal+" CC (+"+p.gain_competence+")"
+    if bonus > 0 then
+      return normal+" CC (+"+bonus+" CC)"
     end
 
     return normal+" CC"
@@ -207,7 +220,8 @@ Interface = object
   end
 
   bonus_actuel = function(p)
-    texte = "Bonus équipement : +"+p.gain_competence+" CC"
+    bonus = Production.gain_competence_total(p)
+    texte = "Bonus équipement : +"+bonus+" CC"
 
     if p.auto_illimite then
       return texte+" | Auto illimitée"
@@ -283,7 +297,6 @@ Interface = object
       p = bloc.productions[index]
 
       if p.debloquee then
-
         if dans_bouton(-42,y,24,10) then
           selection_production = index
           Production.lancer(p)
@@ -345,7 +358,6 @@ Interface = object
       p = bloc.productions[index]
 
       if p.debloquee then
-
         if dans_bouton(0,y,190,54) then
           selection_production = index
         end
@@ -399,7 +411,7 @@ Interface = object
   end
 
   update_panneau_pc = function(p)
-    if dans_bouton(85,-2,18,16) then
+    if dans_bouton(92,-2,18,16) then
       fermer_competences()
       return
     end
@@ -506,13 +518,9 @@ Interface = object
     barre(10,y-3,76,5,auto,"#38414F","#9A7726")
     screen.drawText(texte_auto_court(p),10,y-3,3,"#FFFFFF")
 
-    screen.drawText(texte_cout_achat(p,1),62,y+8,3,"#AAB4C4")
-    screen.drawText(texte_cout_achat(p,10),89,y+8,3,"#AAB4C4")
-    screen.drawText(texte_cout_max(p),118,y+8,3,"#AAB4C4")
-
-    bouton(62,y,22,10,"+1","#3C6FA8",4)
-    bouton(89,y,26,10,"+10","#3C6FA8",4)
-    bouton(118,y,28,10,"MAX","#3C6FA8",4)
+    bouton_niveau(62,y,22,10,"+1",texte_cout_achat(p,1))
+    bouton_niveau(89,y,26,10,"+10",texte_cout_achat(p,10))
+    bouton_niveau(118,y,28,10,"MAX",texte_cout_max(p))
     bouton(156,y,40,10,"COMPÉTENCE","#7652A8",3)
   end
 
@@ -571,13 +579,9 @@ Interface = object
     barre(17,y-19,124,6,auto,"#38414F","#9A7726")
     screen.drawText(texte_auto_court(p),17,y-19,3,"#FFFFFF")
 
-    screen.drawText(texte_cout_achat(p,1),-58,y-34,3,"#AAB4C4")
-    screen.drawText(texte_cout_achat(p,10),-10,y-34,3,"#AAB4C4")
-    screen.drawText(texte_cout_max(p),38,y-34,3,"#AAB4C4")
-
-    bouton(-58,y-28,28,8,"+1","#3C6FA8",3)
-    bouton(-10,y-28,28,8,"+10","#3C6FA8",3)
-    bouton(38,y-28,28,8,"MAX","#3C6FA8",3)
+    bouton_niveau_mobile(-58,y-28,28,8,"+1",texte_cout_achat(p,1))
+    bouton_niveau_mobile(-10,y-28,28,8,"+10",texte_cout_achat(p,10))
+    bouton_niveau_mobile(38,y-28,28,8,"MAX",texte_cout_max(p))
     bouton(74,y-28,54,8,"COMPÉTENCE","#7652A8",3)
   end
 
