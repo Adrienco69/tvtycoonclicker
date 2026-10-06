@@ -122,6 +122,32 @@ Production = object
     return true
   end
 
+  acheter_niveaux = function(p, quantite)
+    achetes = 0
+
+    while achetes < quantite
+      if not acheter_niveau(p) then
+        return achetes
+      end
+      achetes = achetes + 1
+    end
+
+    return achetes
+  end
+
+  acheter_max = function(p)
+    achetes = 0
+
+    while p.niveau < p.niveau_max
+      if not acheter_niveau(p) then
+        return achetes
+      end
+      achetes = achetes + 1
+    end
+
+    return achetes
+  end
+
   lancer = function(p)
     if p.en_cours then
       return false
