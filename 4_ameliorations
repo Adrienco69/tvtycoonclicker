@@ -11,29 +11,6 @@ Ameliorations = object
     return Donnees.get_competence(p.bloc_id,niveau)
   end
 
-  appliquer = function(p,competence)
-    if competence == 0 then
-      return false
-    end
-
-    niveau = competence.niveau
-
-    if niveau % 2 == 1 then
-      p.gain_competence = p.gain_competence + competence.valeur
-      return true
-    end
-
-    if competence.valeur < 0 then
-      p.auto_illimite = true
-      p.auto_duree_minutes = 0
-      p.auto_restant = 0
-      return true
-    end
-
-    p.auto_duree_minutes = competence.valeur
-    return true
-  end
-
   recalculer = function(p)
     p.gain_competence = 0
     p.auto_duree_minutes = 0
@@ -45,7 +22,16 @@ Ameliorations = object
       competence = get(p,niveau)
 
       if competence != 0 then
-        appliquer(p,competence)
+        if niveau % 2 == 1 then
+          p.gain_competence = p.gain_competence + competence.valeur
+        else
+          if competence.valeur < 0 then
+            p.auto_illimite = true
+            p.auto_duree_minutes = 0
+          else
+            p.auto_duree_minutes = competence.valeur
+          end
+        end
       end
 
       niveau = niveau + 1
@@ -75,6 +61,20 @@ Ameliorations = object
 
     recalculer(p)
 
+    if prochain % 2 == 0 then
+      if p.auto_illimite then
+        if not p.en_cours then
+          Production.lancer(p)
+        end
+      else
+        p.auto_restant = p.auto_duree_minutes * 60
+
+        if not p.en_cours then
+          Production.lancer(p)
+        end
+      end
+    end
+
     return true
   end
 
@@ -82,6 +82,9 @@ Ameliorations = object
     recalculer(p)
 
     if p.auto_illimite then
+      if not p.en_cours then
+        Production.lancer(p)
+      end
       return true
     end
 
