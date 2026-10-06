@@ -70,7 +70,7 @@ Production = object
       competence = Donnees.get_competence(p.bloc_id,niveau_competence)
 
       if competence != 0 then
-        if competence.type == "gain_fixe" then
+        if niveau_competence % 2 == 1 then
           total = total + competence.valeur
         end
       end
