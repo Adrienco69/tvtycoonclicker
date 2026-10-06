@@ -5,7 +5,7 @@ Parametres = object
       nom = "Shortcom"
       total = 10
       gain_base = 1
-      gain_pas = 1
+      progression_gain = 1
       ameliorations = 10
     end,
     object
@@ -13,7 +13,7 @@ Parametres = object
       nom = "Série"
       total = 20
       gain_base = 20
-      gain_pas = 10
+      progression_gain = 10
       ameliorations = 20
     end,
     object
@@ -21,7 +21,7 @@ Parametres = object
       nom = "Film / Téléfilm"
       total = 30
       gain_base = 400
-      gain_pas = 400
+      progression_gain = 400
       ameliorations = 30
     end,
     object
@@ -29,7 +29,7 @@ Parametres = object
       nom = "TV Réalité"
       total = 40
       gain_base = 24000
-      gain_pas = 24000
+      progression_gain = 24000
       ameliorations = 40
     end
   ]
