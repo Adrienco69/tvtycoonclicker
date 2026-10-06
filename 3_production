@@ -1,0 +1,102 @@
+Production = object
+
+Production.creer = function(bloc, numero)
+  p = object
+    bloc_id = bloc.id
+    bloc_nom = bloc.nom
+    numero = numero
+
+    niveau = 1
+    niveau_max = numero * 100
+
+    gain_base = bloc.gain_base + (numero - 1) * bloc.gain_pas
+    gain_bonus = 0
+
+    cout_niveau = (bloc.gain_base + (numero - 1) * bloc.gain_pas) * 2
+
+    temps_base = numero * 10
+    if bloc.id == "serie" then
+      temps_base = 200 + (numero - 1) * 10
+    elsif bloc.id == "telefilm" then
+      temps_base = 400 + (numero - 1) * 20
+    elsif bloc.id == "tvreal" then
+      temps_base = 800 + (numero - 1) * 30
+    end
+
+    temps_restant = temps_base
+    temps_courant = temps_base
+
+    debloquee = false
+
+    amelioration = 0
+    amelioration_max = bloc.ameliorations
+
+    auto_restant = 0
+    auto_illimite = false
+  end
+
+  return p
+end
+
+Production.gain_niveau = function(p)
+  gain = p.gain_base * p.niveau
+  gain = gain * (1 + p.gain_bonus / 100)
+  return floor(gain)
+end
+
+Production.temps_niveau = function(p)
+  if p.niveau < Parametres.niveau_depart_reduction_temps then
+    return p.temps_base
+  end
+
+  plage = p.niveau_max - Parametres.niveau_depart_reduction_temps
+  if plage <= 0 then
+    return Parametres.temps_minimum
+  end
+
+  progression = (p.niveau - Parametres.niveau_depart_reduction_temps) / plage
+  if progression < 0 then progression = 0 end
+  if progression > 1 then progression = 1 end
+
+  t = p.temps_base - (p.temps_base - Parametres.temps_minimum) * progression
+  if t < Parametres.temps_minimum then
+    t = Parametres.temps_minimum
+  end
+
+  return max(Parametres.temps_minimum, round(t))
+end
+
+Production.calculer_cout_suivant = function(p)
+  if p.niveau >= p.niveau_max then
+    return 0
+  end
+
+  cout = p.cout_niveau
+
+  if p.niveau % 10 == 0 then
+    cout = cout * 2
+  else
+    cout = cout + p.gain_base
+  end
+
+  return floor(cout)
+end
+
+Production.acheter_niveau = function(p)
+  if p.niveau >= p.niveau_max then
+    return false
+  end
+
+  cout = Production.calculer_cout_suivant(p)
+
+  if Economie.cc < cout then
+    return false
+  end
+
+  Economie.cc -= cout
+  p.niveau += 1
+  p.cout_niveau = cout
+  p.temps_courant = Production.temps_niveau(p)
+
+  return true
+end
