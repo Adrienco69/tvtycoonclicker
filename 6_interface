@@ -54,16 +54,6 @@ Interface = object
     return Economie.cc >= cout
   end
 
-  peut_acheter_max = function(p)
-    cout = Production.cout_max(p)
-
-    if cout <= 0 then
-      return false
-    end
-
-    return Economie.cc >= cout
-  end
-
   peut_acheter_competence = function(p)
     if p.competence >= p.competence_max then
       return false
@@ -218,16 +208,6 @@ Interface = object
     return "("+cout+" CC)"
   end
 
-  texte_cout_max = function(p)
-    cout = Production.cout_max(p)
-
-    if cout <= 0 then
-      return "(MAX)"
-    end
-
-    return "("+cout+" CC)"
-  end
-
   texte_cout_competence = function(p)
     if p.competence >= p.competence_max then
       return "(MAX)"
@@ -334,8 +314,8 @@ Interface = object
         if dans_bouton(89,y,26,10) then
           selection_production = index
 
-          if peut_acheter_niveaux(p,10) then
-            Production.acheter_niveaux(p,10)
+          if peut_acheter_niveaux(p,5) then
+            Production.acheter_niveaux(p,5)
           end
 
           return true
@@ -344,8 +324,8 @@ Interface = object
         if dans_bouton(118,y,28,10) then
           selection_production = index
 
-          if peut_acheter_max(p) then
-            Production.acheter_max(p)
+          if peut_acheter_niveaux(p,10) then
+            Production.acheter_niveaux(p,10)
           end
 
           return true
@@ -412,8 +392,8 @@ Interface = object
         if dans_bouton(-10,y-28,28,8) then
           selection_production = index
 
-          if peut_acheter_niveaux(p,10) then
-            Production.acheter_niveaux(p,10)
+          if peut_acheter_niveaux(p,5) then
+            Production.acheter_niveaux(p,5)
           end
 
           return true
@@ -422,8 +402,8 @@ Interface = object
         if dans_bouton(38,y-28,28,8) then
           selection_production = index
 
-          if peut_acheter_max(p) then
-            Production.acheter_max(p)
+          if peut_acheter_niveaux(p,10) then
+            Production.acheter_niveaux(p,10)
           end
 
           return true
@@ -509,8 +489,8 @@ Interface = object
     screen.drawText(texte_auto_court(p),10,y-3,3,"#FFFFFF")
 
     bouton_niveau(62,y,22,10,"+1",texte_cout_achat(p,1),peut_acheter_niveaux(p,1))
-    bouton_niveau(89,y,26,10,"+10",texte_cout_achat(p,10),peut_acheter_niveaux(p,10))
-    bouton_niveau(118,y,28,10,"MAX",texte_cout_max(p),peut_acheter_max(p))
+    bouton_niveau(89,y,26,10,"+5",texte_cout_achat(p,5),peut_acheter_niveaux(p,5))
+    bouton_niveau(118,y,28,10,"+10",texte_cout_achat(p,10),peut_acheter_niveaux(p,10))
     bouton_competence(156,y,40,10,"COMPÉTENCE "+p.competence+"/"+p.competence_max,texte_cout_competence(p),peut_acheter_competence(p))
   end
 
@@ -570,8 +550,8 @@ Interface = object
     screen.drawText(texte_auto_court(p),17,y-19,3,"#FFFFFF")
 
     bouton_niveau_mobile(-58,y-28,28,8,"+1",texte_cout_achat(p,1),peut_acheter_niveaux(p,1))
-    bouton_niveau_mobile(-10,y-28,28,8,"+10",texte_cout_achat(p,10),peut_acheter_niveaux(p,10))
-    bouton_niveau_mobile(38,y-28,28,8,"MAX",texte_cout_max(p),peut_acheter_max(p))
+    bouton_niveau_mobile(-10,y-28,28,8,"+5",texte_cout_achat(p,5),peut_acheter_niveaux(p,5))
+    bouton_niveau_mobile(38,y-28,28,8,"+10",texte_cout_achat(p,10),peut_acheter_niveaux(p,10))
     bouton_competence_mobile(74,y-28,54,8,"COMPÉTENCE "+p.competence+"/"+p.competence_max,texte_cout_competence(p),peut_acheter_competence(p))
   end
 
