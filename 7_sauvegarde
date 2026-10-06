@@ -1,12 +1,9 @@
 Sauvegarde = object
+  sauver = function()
+    return true
+  end
 
-# Version de base.
-# La sauvegarde locale sera ajoutée après validation du gameplay.
-
-Sauvegarde.sauver = function()
-  return true
-end
-
-Sauvegarde.charger = function()
-  return false
+  charger = function()
+    return false
+  end
 end
