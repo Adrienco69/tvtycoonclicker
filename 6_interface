@@ -121,6 +121,22 @@ Interface = object
     return p.niveau+"/"+p.niveau_max+" ("+cout+" CC)"
   end
 
+  texte_cout_achat = function(p,quantite)
+    cout = Production.cout_niveaux(p,quantite)
+    if cout <= 0 then
+      return "(MAX)"
+    end
+    return "("+cout+" CC)"
+  end
+
+  texte_cout_max = function(p)
+    cout = Production.cout_max(p)
+    if cout <= 0 then
+      return "(MAX)"
+    end
+    return "("+cout+" CC)"
+  end
+
   prochain_programme = function(bloc)
     index = 0
 
@@ -427,6 +443,10 @@ Interface = object
     barre(40,y-3,90,5,auto,"#38414F","#9A7726")
     screen.drawText(texte_auto_court(p),40,y-3,3,"#FFFFFF")
 
+    screen.drawText(texte_cout_achat(p,1),108,y+8,3,"#AAB4C4")
+    screen.drawText(texte_cout_achat(p,10),135,y+8,3,"#AAB4C4")
+    screen.drawText(texte_cout_max(p),164,y+8,3,"#AAB4C4")
+
     bouton(108,y,22,10,"+1","#3C6FA8",4)
     bouton(135,y,26,10,"+10","#3C6FA8",4)
     bouton(164,y,28,10,"MAX","#3C6FA8",4)
@@ -440,7 +460,7 @@ Interface = object
       p = bloc.productions[index]
       if p.debloquee then
         dessiner_ligne_pc(p,index,y)
-        y = y - 14
+        y = y - 18
       end
       index = index + 1
     end
@@ -450,7 +470,7 @@ Interface = object
     selection = index == selection_production
 
     if selection then
-      screen.fillRect(0,y,194,18,"#283247")
+      screen.fillRect(0,y,194,20,"#283247")
     end
 
     screen.drawText(p.numero,-88,y,5,"#FFFFFF")
@@ -469,6 +489,10 @@ Interface = object
     barre(24,y-3,72,5,auto,"#38414F","#9A7726")
     screen.drawText(texte_auto_court(p),24,y-3,3,"#FFFFFF")
 
+    screen.drawText(texte_cout_achat(p,1),66,y+9,2,"#AAB4C4")
+    screen.drawText(texte_cout_achat(p,10),86,y+9,2,"#AAB4C4")
+    screen.drawText(texte_cout_max(p),107,y+9,2,"#AAB4C4")
+
     bouton(66,y,20,12,"+1","#3C6FA8",4)
     bouton(86,y,20,12,"+10","#3C6FA8",4)
     bouton(107,y,22,12,"MAX","#3C6FA8",3)
@@ -482,7 +506,7 @@ Interface = object
       p = bloc.productions[index]
       if p.debloquee then
         dessiner_ligne_mobile(p,index,y)
-        y = y - 21
+        y = y - 24
       end
       index = index + 1
     end
