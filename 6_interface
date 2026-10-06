@@ -113,6 +113,14 @@ Interface = object
     return "AUTO "+p.auto_duree_minutes+"m"
   end
 
+  texte_niveau = function(p)
+    cout = Production.cout_suivant(p)
+    if cout == 0 then
+      return p.niveau+"/"+p.niveau_max+" (MAX)"
+    end
+    return p.niveau+"/"+p.niveau_max+" ("+cout+" CC)"
+  end
+
   prochain_programme = function(bloc)
     index = 0
 
@@ -404,7 +412,7 @@ Interface = object
 
     screen.drawText(p.bloc_nom+" "+p.numero,-150,y,5,"#FFFFFF")
     screen.drawText(Production.gain_niveau(p)+" CC",-92,y,5,"#8FE59C")
-    screen.drawText(p.niveau+"/"+p.niveau_max,-44,y,5,"#C8D0DE")
+    screen.drawText(texte_niveau(p),-44,y,4,"#C8D0DE")
 
     prod = progression_production(p)
     barre(40,y+2,90,5,prod,"#38414F","#2D8B62")
@@ -447,7 +455,7 @@ Interface = object
 
     screen.drawText(p.numero,-88,y,5,"#FFFFFF")
     screen.drawText(Production.gain_niveau(p)+"CC",-66,y,4,"#8FE59C")
-    screen.drawText(p.niveau+"/"+p.niveau_max,-33,y,4,"#C8D0DE")
+    screen.drawText(texte_niveau(p),-33,y,3,"#C8D0DE")
 
     prod = progression_production(p)
     barre(24,y+3,72,5,prod,"#38414F","#2D8B62")
