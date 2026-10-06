@@ -16,24 +16,40 @@ Ameliorations = object
       return false
     end
 
-    if competence.effet == "gain_fixe" then
+    niveau = competence.niveau
+
+    if niveau % 2 == 1 then
       p.gain_competence = p.gain_competence + competence.valeur
       return true
     end
 
-    if competence.effet == "auto" then
-      p.auto_duree_minutes = competence.valeur
-      return true
-    end
-
-    if competence.effet == "auto_infini" then
+    if competence.valeur < 0 then
       p.auto_illimite = true
       p.auto_duree_minutes = 0
       p.auto_restant = 0
       return true
     end
 
-    return false
+    p.auto_duree_minutes = competence.valeur
+    return true
+  end
+
+  recalculer = function(p)
+    p.gain_competence = 0
+    p.auto_duree_minutes = 0
+    p.auto_illimite = false
+
+    niveau = 1
+
+    while niveau <= p.competence
+      competence = get(p,niveau)
+
+      if competence != 0 then
+        appliquer(p,competence)
+      end
+
+      niveau = niveau + 1
+    end
   end
 
   acheter = function(p)
@@ -54,17 +70,17 @@ Ameliorations = object
       return false
     end
 
-    if not appliquer(p,competence) then
-      return false
-    end
-
     Economie.cc = Economie.cc - prix
     p.competence = prochain
+
+    recalculer(p)
 
     return true
   end
 
   recharger_auto = function(p)
+    recalculer(p)
+
     if p.auto_illimite then
       return true
     end
