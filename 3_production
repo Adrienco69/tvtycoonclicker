@@ -10,10 +10,10 @@ Production = object
     p.niveau = 1
     p.niveau_max = numero * 100
 
-    pas_gain = bloc.gain_pas
-    decalage_gain = numero - 1
-    ajout_gain = decalage_gain * pas_gain
-    p.gain_base = bloc.gain_base + ajout_gain
+    progression = bloc.progression_gain
+    decalage = numero - 1
+    ajout = decalage * progression
+    p.gain_base = bloc.gain_base + ajout
     p.gain_bonus = 0
 
     p.cout_niveau = p.gain_base * 2
@@ -74,17 +74,17 @@ Production = object
 
     niveau_ecoule = p.niveau - 1
     niveaux_total = p.niveau_max - 1
-    progression = niveau_ecoule / niveaux_total
+    progression_temps = niveau_ecoule / niveaux_total
 
     ecart_temps = p.temps_base - p.temps_min
-    reduction = ecart_temps * progression
-    t = p.temps_base - reduction
+    reduction = ecart_temps * progression_temps
+    temps = p.temps_base - reduction
 
-    if t < p.temps_min then
-      t = p.temps_min
+    if temps < p.temps_min then
+      temps = p.temps_min
     end
 
-    return round(t)
+    return round(temps)
   end
 
   cout_suivant = function(p)
