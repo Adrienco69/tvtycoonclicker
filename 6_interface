@@ -170,6 +170,28 @@ Interface = object
     return "AUTO À DÉBLOQUER"
   end
 
+  texte_amelioration = function(p)
+    if p.amelioration >= p.amelioration_max then
+      return "AMÉLIORATIONS MAX"
+    end
+
+    prochain = p.amelioration + 1
+    prix = Ameliorations.cout(p,prochain)
+    paire = floor(prochain / 2) * 2
+
+    if paire != prochain then
+      bonus = Ameliorations.bonus_gain_cible(p,prochain)
+      return "+"+bonus+"% GAINS = "+prix+" CC"
+    end
+
+    minutes = Ameliorations.auto_minutes(p,prochain)
+    if minutes == -1 then
+      return "AUTO ILLIMITÉE = "+prix+" CC"
+    end
+
+    return "AUTO "+minutes+" MIN = "+prix+" CC"
+  end
+
   texte_prochain = function(bloc,p)
     index_suivant = p.numero
 
@@ -225,8 +247,7 @@ Interface = object
     if p.amelioration >= p.amelioration_max then
       bouton(65,-38,115,24,"AMÉLIORATIONS MAX","#555B66",7)
     else
-      prix = Ameliorations.cout(p,p.amelioration+1)
-      bouton(65,-38,115,24,"AMÉLIO "+(p.amelioration+1)+"  "+prix+" CC","#7652A8",7)
+      bouton(65,-38,115,24,texte_amelioration(p),"#7652A8",6)
     end
 
     if p.auto_illimite or p.auto_duree_minutes > 0 then
@@ -271,8 +292,7 @@ Interface = object
     if p.amelioration >= p.amelioration_max then
       bouton(0,-78,170,34,"AMÉLIORATIONS MAX","#555B66",8)
     else
-      prix = Ameliorations.cout(p,p.amelioration+1)
-      bouton(0,-78,170,34,"AMÉLIO "+(p.amelioration+1)+"  "+prix+" CC","#7652A8",8)
+      bouton(0,-78,170,34,texte_amelioration(p),"#7652A8",7)
     end
 
     if p.auto_illimite or p.auto_duree_minutes > 0 then
