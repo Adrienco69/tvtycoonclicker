@@ -95,6 +95,43 @@ Production = object
     return floor(p.cout_niveau)
   end
 
+  cout_niveaux = function(p, quantite)
+    if p.niveau >= p.niveau_max then
+      return 0
+    end
+
+    niveau_test = p.niveau
+    cout_test = p.cout_niveau
+    total = 0
+    achetes = 0
+
+    while achetes < quantite and niveau_test < p.niveau_max
+      total = total + cout_test
+      niveau_test = niveau_test + 1
+
+      dizaine = floor(niveau_test / 10)
+      reste = niveau_test - dizaine * 10
+
+      if reste == 0 then
+        cout_test = cout_test * 2
+      else
+        cout_test = cout_test + p.gain_base
+      end
+
+      achetes = achetes + 1
+    end
+
+    return floor(total)
+  end
+
+  cout_max = function(p)
+    restant = p.niveau_max - p.niveau
+    if restant <= 0 then
+      return 0
+    end
+    return cout_niveaux(p,restant)
+  end
+
   acheter_niveau = function(p)
     if p.niveau >= p.niveau_max then
       return false
