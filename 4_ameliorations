@@ -7,6 +7,19 @@ Ameliorations = object
     return floor(p.gain_base * 4 * (2 ^ (prochain_niveau - 1)))
   end
 
+  niveau_requis = function(niveau_competence)
+    if niveau_competence < 1 then
+      niveau_competence = 1
+    end
+
+    return niveau_competence * 10 - 5
+  end
+
+  debloquee = function(p,niveau_competence)
+    requis = niveau_requis(niveau_competence)
+    return p.niveau >= requis
+  end
+
   get = function(p,niveau)
     return Donnees.get_competence(p.bloc_id,niveau)
   end
@@ -44,6 +57,11 @@ Ameliorations = object
     end
 
     prochain = p.competence + 1
+
+    if not debloquee(p,prochain) then
+      return false
+    end
+
     competence = get(p,prochain)
 
     if competence == 0 then
