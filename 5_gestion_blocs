@@ -41,7 +41,7 @@ GestionBlocs = object
           local p = bloc.productions[i]
 
           if p.debloquee and i + 1 < bloc.productions.length then
-            local seuil = p.numero * 50
+            local seuil = p.numero * 10
             if p.niveau >= seuil then
               bloc.productions[i + 1].debloquee = true
             end
