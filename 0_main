@@ -1,0 +1,69 @@
+main = object
+
+main.production_selectionnee = 0
+
+init = function()
+  GestionBlocs.initialiser()
+end
+
+update = function()
+  dt = 1 / 60
+
+  GestionBlocs.update(dt)
+
+  bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
+
+  if keyboard.UP.press then
+    main.production_selectionnee -= 1
+    if main.production_selectionnee < 0 then main.production_selectionnee = 0 end
+  end
+
+  if keyboard.DOWN.press then
+    main.production_selectionnee += 1
+    if main.production_selectionnee >= bloc.productions.length then
+      main.production_selectionnee = bloc.productions.length - 1
+    end
+  end
+
+  if keyboard.LEFT.press then
+    GestionBlocs.bloc_actif -= 1
+    if GestionBlocs.bloc_actif < 0 then GestionBlocs.bloc_actif = 0 end
+    main.production_selectionnee = 0
+  end
+
+  if keyboard.RIGHT.press then
+    prochain = GestionBlocs.bloc_actif + 1
+    if prochain < GestionBlocs.blocs.length then
+      if GestionBlocs.blocs[prochain].debloque then
+        GestionBlocs.bloc_actif = prochain
+        main.production_selectionnee = 0
+      end
+    end
+  end
+
+  bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
+
+  if main.production_selectionnee >= bloc.productions.length then
+    main.production_selectionnee = bloc.productions.length - 1
+  end
+
+  p = bloc.productions[main.production_selectionnee]
+
+  if p.debloquee then
+    if keyboard.SPACE.press then
+      Economie.ajouter(Production.gain_niveau(p))
+    end
+
+    if keyboard.N.press then
+      Production.acheter_niveau(p)
+    end
+
+    if keyboard.A.press then
+      Ameliorations.acheter(p)
+    end
+  end
+end
+
+draw = function()
+  Interface.dessiner()
+end
