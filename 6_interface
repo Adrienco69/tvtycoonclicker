@@ -222,7 +222,7 @@ Interface = object
     prochain = p.competence + 1
 
     if not Ameliorations.debloquee(p,prochain) then
-      requis = Ameliorations.niveau_requis(prochain)
+      requis = Ameliorations.niveau_requis(p,prochain)
       return "(NIV "+requis+")"
     end
 
