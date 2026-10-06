@@ -1,0 +1,73 @@
+Ameliorations = object
+
+Ameliorations.cout = function(p, prochain_niveau)
+  if prochain_niveau < 1 then prochain_niveau = 1 end
+  return floor(p.gain_base * 4 * pow(2, prochain_niveau - 1))
+end
+
+Ameliorations.bonus_gain_cible = function(p, niveau_amelioration)
+  nb_impairs = ceil(p.amelioration_max / 2)
+  rang = ceil(niveau_amelioration / 2)
+
+  if nb_impairs <= 1 then
+    return 50
+  end
+
+  bonus = 2 + (rang - 1) * (48 / (nb_impairs - 1))
+
+  if bonus > 50 then bonus = 50 end
+  return round(bonus)
+end
+
+Ameliorations.auto_minutes = function(p, niveau_amelioration)
+  nb_auto = floor(p.amelioration_max / 2)
+  rang = floor(niveau_amelioration / 2)
+
+  if rang >= nb_auto then
+    return -1
+  end
+
+  if nb_auto <= 2 then
+    if rang == 1 then return 2 end
+    return 30
+  end
+
+  ratio = (rang - 1) / (nb_auto - 2)
+  minutes = 2 + ratio * 28
+
+  if minutes > 30 then minutes = 30 end
+  if minutes < 2 then minutes = 2 end
+
+  return round(minutes)
+end
+
+Ameliorations.acheter = function(p)
+  if p.amelioration >= p.amelioration_max then
+    return false
+  end
+
+  prochain = p.amelioration + 1
+  cout = Ameliorations.cout(p, prochain)
+
+  if Economie.cc < cout then
+    return false
+  end
+
+  Economie.cc -= cout
+  p.amelioration = prochain
+
+  if prochain % 2 == 1 then
+    p.gain_bonus = Ameliorations.bonus_gain_cible(p, prochain)
+  else
+    minutes = Ameliorations.auto_minutes(p, prochain)
+
+    if minutes == -1 then
+      p.auto_illimite = true
+      p.auto_restant = 0
+    else
+      p.auto_restant = minutes * 60
+    end
+  end
+
+  return true
+end
