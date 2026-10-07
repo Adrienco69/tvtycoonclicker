@@ -28,7 +28,8 @@ Interface = object
     end
 
     screen.fillRect(x,y,w,h,couleur)
-    screen.drawText("LANCER ("+p.cout_lancement+"CC)",x,y,taille,"#FFFFFF")
+    screen.drawText("LANCER",x,y+2,taille,"#FFFFFF")
+    screen.drawText("("+p.cout_lancement+"CC)",x,y-2,taille,"#FFFFFF")
   end
 
   bouton_niveau = function(x,y,w,h,texte,cout,actif)
