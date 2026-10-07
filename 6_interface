@@ -20,6 +20,17 @@ Interface = object
     screen.drawText(texte,x,y,taille,"#FFFFFF")
   end
 
+  bouton_lancer = function(x,y,w,h,p,taille)
+    couleur = "#2D8B62"
+
+    if not Production.peut_lancer(p) then
+      couleur = "#555B66"
+    end
+
+    screen.fillRect(x,y,w,h,couleur)
+    screen.drawText("LANCER ("+p.cout_lancement+"CC)",x,y,taille,"#FFFFFF")
+  end
+
   bouton_niveau = function(x,y,w,h,texte,cout,actif)
     couleur = "#3C6FA8"
 
@@ -298,7 +309,7 @@ Interface = object
       p = bloc.productions[index]
 
       if p.debloquee then
-        if dans_bouton(-42,y,24,10) then
+        if dans_bouton(-42,y,34,10) then
           selection_production = index
           Production.lancer(p)
           return true
@@ -376,7 +387,7 @@ Interface = object
           selection_production = index
         end
 
-        if dans_bouton(-63,y-11,34,10) then
+        if dans_bouton(-63,y-11,44,10) then
           selection_production = index
           Production.lancer(p)
           return true
@@ -486,7 +497,7 @@ Interface = object
     screen.drawText(texte_gain(p),-118,y,4,"#8FE59C")
     screen.drawText(texte_niveau(p),-82,y,4,"#C8D0DE")
 
-    bouton(-42,y,24,10,"LANCER","#2D8B62",3)
+    bouton_lancer(-42,y,34,10,p,2)
 
     prod = progression_production(p)
     barre(10,y+2,76,5,prod,"#38414F","#2D8B62")
@@ -547,7 +558,7 @@ Interface = object
       screen.drawText("("+cout_txt+" CC)",72,y+11,4,"#C8D0DE")
     end
 
-    bouton(-63,y-11,34,10,"LANCER","#2D8B62",3)
+    bouton_lancer(-63,y-11,44,10,p,2)
 
     prod = progression_production(p)
     barre(17,y-11,124,6,prod,"#38414F","#2D8B62")
