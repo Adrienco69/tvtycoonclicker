@@ -25,6 +25,7 @@ Donnees = object
     if programmes_prets and competences_pretes and not pret then
       pret = true
       GestionBlocs.initialiser()
+      Sauvegarde.charger()
     end
   end
 
