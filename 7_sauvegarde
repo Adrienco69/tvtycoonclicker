@@ -109,6 +109,20 @@ Sauvegarde = object
     return true
   end
 
+  recommencer = function()
+    storage.set(cle,0)
+
+    temps_auto = 0
+    Economie.cc = 0
+    Economie.total_gagne = 0
+    selection_production = 0
+
+    GestionBlocs.initialiser()
+    sauver()
+
+    return true
+  end
+
   update = function(dt)
     if not Donnees.pret then
       return
