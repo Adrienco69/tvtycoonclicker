@@ -19,6 +19,7 @@ Production = object
     p.gain_competence = 0
 
     p.cout_niveau = p.gain_base * 2
+    p.cout_lancement = bloc.cout_lancement_depart + (numero - 1) * bloc.progression_lancement
 
     if bloc.id == "shortcom" then
       p.temps_base = numero * 10
@@ -213,10 +214,24 @@ Production = object
     return achetes
   end
 
+  peut_lancer = function(p)
+    if p.en_cours then
+      return false
+    end
+
+    return Economie.cc >= p.cout_lancement
+  end
+
   lancer = function(p)
     if p.en_cours then
       return false
     end
+
+    if Economie.cc < p.cout_lancement then
+      return false
+    end
+
+    Economie.cc = Economie.cc - p.cout_lancement
 
     p.temps_courant = temps_niveau(p)
     p.temps_restant = p.temps_courant
