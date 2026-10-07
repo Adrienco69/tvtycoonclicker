@@ -1,4 +1,6 @@
 Interface = object
+  confirmation_recommencer = false
+
   est_mobile = function()
     if screen.height > screen.width then
       return true
@@ -103,6 +105,44 @@ Interface = object
     screen.fillRect(x,y,w,h,couleur)
     screen.drawText(texte,x,y+2,3,"#FFFFFF")
     screen.drawText(cout,x,y-2,2,"#E9DDF7")
+  end
+
+  texte_recommencer = function()
+    if confirmation_recommencer then
+      return "CONFIRMER"
+    end
+
+    return "RECOMMENCER"
+  end
+
+  clic_recommencer_pc = function()
+    if dans_bouton(-150,92,52,12) then
+      if confirmation_recommencer then
+        Sauvegarde.recommencer()
+        confirmation_recommencer = false
+      else
+        confirmation_recommencer = true
+      end
+
+      return true
+    end
+
+    return false
+  end
+
+  clic_recommencer_mobile = function()
+    if dans_bouton(0,128,70,12) then
+      if confirmation_recommencer then
+        Sauvegarde.recommencer()
+        confirmation_recommencer = false
+      else
+        confirmation_recommencer = true
+      end
+
+      return true
+    end
+
+    return false
   end
 
   peut_bloc_gauche = function()
@@ -452,6 +492,10 @@ Interface = object
   update_pc = function()
     bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
 
+    if clic_recommencer_pc() then
+      return
+    end
+
     if clic_bloc_pc() then
       return
     end
@@ -461,6 +505,10 @@ Interface = object
 
   update_mobile = function()
     bloc = GestionBlocs.blocs[GestionBlocs.bloc_actif]
+
+    if clic_recommencer_mobile() then
+      return
+    end
 
     if clic_bloc_mobile() then
       return
@@ -600,6 +648,8 @@ Interface = object
     screen.drawText("TV TYCOON CLICKER",0,92,11,"#FFFFFF")
     screen.drawText("CC : "+floor(Economie.cc),0,80,9,"#FFD45A")
 
+    bouton(-150,92,52,12,texte_recommencer(),"#8B3A3A",3)
+
     if peut_bloc_gauche() then
       bouton(-150,67,20,16,"<","#39465C",7)
     end
@@ -635,6 +685,7 @@ Interface = object
     end
 
     screen.drawText(bloc.nom,0,144,10,"#BFE1FF")
+    bouton(0,128,70,12,texte_recommencer(),"#8B3A3A",3)
 
     dessiner_lignes_mobile(bloc)
 
