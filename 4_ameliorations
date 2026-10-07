@@ -45,15 +45,13 @@ Ameliorations = object
       competence = get(p,niveau)
 
       if competence != 0 then
-        if niveau % 2 == 1 then
+        if competence.effet == "gain_fixe" then
           p.gain_competence = p.gain_competence + competence.valeur
-        else
-          if competence.valeur < 0 then
-            p.auto_illimite = true
-            p.auto_duree_minutes = 0
-          else
-            p.auto_duree_minutes = competence.valeur
-          end
+        elsif competence.effet == "auto" then
+          p.auto_duree_minutes = competence.valeur
+        elsif competence.effet == "auto_infini" then
+          p.auto_illimite = true
+          p.auto_duree_minutes = 0
         end
       end
 
@@ -89,7 +87,7 @@ Ameliorations = object
 
     recalculer(p)
 
-    if prochain % 2 == 0 then
+    if competence.effet == "auto" or competence.effet == "auto_infini" then
       if p.auto_illimite then
         if not p.en_cours then
           Production.lancer(p)
