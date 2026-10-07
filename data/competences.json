@@ -2,13 +2,6 @@
   "shortcom": [
     {
       "niveau": 1,
-      "nom": "+1 Caméra",
-      "effet": "gain_fixe",
-      "valeur": 2,
-      "texte": "+2 CC par production"
-    },
-    {
-      "niveau": 2,
       "nom": "Automatisation",
       "effet": "auto",
       "valeur": 2,
@@ -16,14 +9,14 @@
       "texte": "AUTO 2 min"
     },
     {
-      "niveau": 3,
-      "nom": "+1 Clap",
+      "niveau": 2,
+      "nom": "+1 Caméra",
       "effet": "gain_fixe",
-      "valeur": 3,
-      "texte": "+3 CC par production"
+      "valeur": 2,
+      "texte": "+2 CC par production"
     },
     {
-      "niveau": 4,
+      "niveau": 3,
       "nom": "Automatisation",
       "effet": "auto",
       "valeur": 8,
@@ -31,14 +24,14 @@
       "texte": "AUTO 8 min"
     },
     {
-      "niveau": 5,
-      "nom": "+1 Micro",
+      "niveau": 4,
+      "nom": "+1 Clap",
       "effet": "gain_fixe",
-      "valeur": 5,
-      "texte": "+5 CC par production"
+      "valeur": 3,
+      "texte": "+3 CC par production"
     },
     {
-      "niveau": 6,
+      "niveau": 5,
       "nom": "Automatisation",
       "effet": "auto",
       "valeur": 18,
@@ -46,14 +39,14 @@
       "texte": "AUTO 18 min"
     },
     {
-      "niveau": 7,
-      "nom": "+1 Éclairage",
+      "niveau": 6,
+      "nom": "+1 Micro",
       "effet": "gain_fixe",
-      "valeur": 10,
-      "texte": "+10 CC par production"
+      "valeur": 5,
+      "texte": "+5 CC par production"
     },
     {
-      "niveau": 8,
+      "niveau": 7,
       "nom": "Automatisation",
       "effet": "auto",
       "valeur": 30,
@@ -61,18 +54,25 @@
       "texte": "AUTO 30 min"
     },
     {
-      "niveau": 9,
-      "nom": "+1 Station de montage",
+      "niveau": 8,
+      "nom": "+1 Éclairage",
       "effet": "gain_fixe",
-      "valeur": 20,
-      "texte": "+20 CC par production"
+      "valeur": 10,
+      "texte": "+10 CC par production"
     },
     {
-      "niveau": 10,
+      "niveau": 9,
       "nom": "Automatisation totale",
       "effet": "auto_infini",
       "valeur": -1,
       "texte": "AUTO illimitée"
+    },
+    {
+      "niveau": 10,
+      "nom": "+1 Station de montage",
+      "effet": "gain_fixe",
+      "valeur": 20,
+      "texte": "+20 CC par production"
     }
   ],
   "serie": [],
