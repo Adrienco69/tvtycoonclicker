@@ -1,9 +1,124 @@
 Sauvegarde = object
+  cle = "tv_tycoon_clicker_sauvegarde_v1"
+  temps_auto = 0
+  intervalle_auto = 2
+
   sauver = function()
+    if not Donnees.pret then
+      return false
+    end
+
+    donnees = object
+    end
+
+    donnees.version = 1
+    donnees.cc = Economie.cc
+    donnees.total_gagne = Economie.total_gagne
+    donnees.bloc_actif = GestionBlocs.bloc_actif
+    donnees.selection_production = selection_production
+    donnees.blocs = []
+
+    bindex = 0
+
+    while bindex < GestionBlocs.blocs.length
+      bloc = GestionBlocs.blocs[bindex]
+
+      bloc_sauve = object
+      end
+
+      bloc_sauve.debloque = bloc.debloque
+      bloc_sauve.productions = []
+
+      pindex = 0
+
+      while pindex < bloc.productions.length
+        p = bloc.productions[pindex]
+
+        prod_sauvee = object
+        end
+
+        prod_sauvee.niveau = p.niveau
+        prod_sauvee.cout_niveau = p.cout_niveau
+        prod_sauvee.debloquee = p.debloquee
+        prod_sauvee.competence = p.competence
+        prod_sauvee.auto_restant = p.auto_restant
+        prod_sauvee.en_cours = p.en_cours
+        prod_sauvee.temps_restant = p.temps_restant
+        prod_sauvee.temps_courant = p.temps_courant
+
+        bloc_sauve.productions.push(prod_sauvee)
+        pindex = pindex + 1
+      end
+
+      donnees.blocs.push(bloc_sauve)
+      bindex = bindex + 1
+    end
+
+    storage.set(cle,donnees)
     return true
   end
 
   charger = function()
-    return false
+    donnees = storage.get(cle)
+
+    if donnees == 0 then
+      return false
+    end
+
+    Economie.cc = donnees.cc
+    Economie.total_gagne = donnees.total_gagne
+
+    if donnees.bloc_actif >= 0 and donnees.bloc_actif < GestionBlocs.blocs.length then
+      GestionBlocs.bloc_actif = donnees.bloc_actif
+    end
+
+    selection_production = donnees.selection_production
+
+    bindex = 0
+
+    while bindex < GestionBlocs.blocs.length and bindex < donnees.blocs.length
+      bloc = GestionBlocs.blocs[bindex]
+      bloc_sauve = donnees.blocs[bindex]
+
+      bloc.debloque = bloc_sauve.debloque
+
+      pindex = 0
+
+      while pindex < bloc.productions.length and pindex < bloc_sauve.productions.length
+        p = bloc.productions[pindex]
+        prod_sauvee = bloc_sauve.productions[pindex]
+
+        p.niveau = prod_sauvee.niveau
+        p.cout_niveau = prod_sauvee.cout_niveau
+        p.debloquee = prod_sauvee.debloquee
+        p.competence = prod_sauvee.competence
+        p.auto_restant = prod_sauvee.auto_restant
+        p.en_cours = prod_sauvee.en_cours
+        p.temps_restant = prod_sauvee.temps_restant
+        p.temps_courant = prod_sauvee.temps_courant
+
+        Ameliorations.recalculer(p)
+
+        pindex = pindex + 1
+      end
+
+      bindex = bindex + 1
+    end
+
+    GestionBlocs.verifier_deblocages()
+    return true
+  end
+
+  update = function(dt)
+    if not Donnees.pret then
+      return
+    end
+
+    temps_auto = temps_auto + dt
+
+    if temps_auto >= intervalle_auto then
+      sauver()
+      temps_auto = 0
+    end
   end
 end
