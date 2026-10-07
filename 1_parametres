@@ -7,6 +7,8 @@ Parametres = object
       gain_base = 1
       progression_gain = 1
       ameliorations = 10
+      cout_lancement_depart = 0
+      progression_lancement = 5
     end,
     object
       id = "serie"
@@ -15,6 +17,8 @@ Parametres = object
       gain_base = 20
       progression_gain = 10
       ameliorations = 20
+      cout_lancement_depart = 90
+      progression_lancement = 10
     end,
     object
       id = "telefilm"
@@ -23,6 +27,8 @@ Parametres = object
       gain_base = 400
       progression_gain = 400
       ameliorations = 30
+      cout_lancement_depart = 560
+      progression_lancement = 15
     end,
     object
       id = "tvreal"
@@ -31,6 +37,8 @@ Parametres = object
       gain_base = 24000
       progression_gain = 24000
       ameliorations = 40
+      cout_lancement_depart = 1990
+      progression_lancement = 20
     end
   ]
 
